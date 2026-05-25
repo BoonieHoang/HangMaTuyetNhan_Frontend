@@ -221,22 +221,34 @@
                         </label>
                     </div>
                     <div id="payment-qr-preview" class="hidden mt-6 p-6 border-2 border-primary/20 rounded-xl bg-bgtheme/10 text-center">
-                        <p class="text-sm font-bold text-primary mb-4">QUÉT MÃ QR ĐỂ THANH TOÁN TẠI ĐÂY</p>
+                        <p class="text-sm font-bold text-primary mb-4">THÔNG TIN TÀI KHOẢN NHẬN THANH TOÁN</p>
                         <!-- Loading -->
-                        <div id="qr-loading" class="py-8 text-gray-400 text-sm">Đang tải mã QR...</div>
-                        <!-- QR Image -->
-                        <div id="qr-image-wrap" class="hidden bg-white p-3 rounded-lg inline-block shadow-sm border border-gray-100">
-                            <img id="preview-qr-image" src="" alt="VietQR" class="w-48 h-48 object-contain mx-auto">
+                        <div id="qr-loading" class="py-6 text-gray-400 text-sm">Đang tải thông tin ngân hàng...</div>
+                        <!-- Bank Details -->
+                        <div id="qr-image-wrap" class="hidden text-left max-w-sm mx-auto space-y-2 bg-white p-4 rounded-lg shadow-sm border border-gray-100 text-sm mb-4">
+                            <div class="flex justify-between border-b pb-1">
+                                <span class="text-gray-500 font-medium">Ngân hàng:</span>
+                                <span id="preview-bank-code" class="font-bold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between border-b pb-1">
+                                <span class="text-gray-500 font-medium">Số tài khoản:</span>
+                                <span id="preview-account-number" class="font-bold text-gray-800"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 font-medium">Chủ tài khoản:</span>
+                                <span id="preview-account-name" class="font-bold text-gray-800"></span>
+                            </div>
                         </div>
                         <!-- Error -->
                         <div id="qr-error" class="hidden py-6 text-red-500 text-sm">
                             ⚠️ Chưa cấu hình thông tin ngân hàng.<br>
                             <span class="text-gray-400 text-xs">Vui lòng liên hệ quản trị viên.</span>
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-4 leading-relaxed">
-                            Nội dung chuyển khoản: <span class="font-bold text-primary">THANH TOAN DON HANG</span><br>
-                            Hệ thống sẽ cập nhật trạng thái ngay khi nhận được tiền.
-                        </p>
+                        <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-left">
+                            <p class="text-xs text-yellow-800 font-medium leading-relaxed">
+                                <strong>Lưu ý quan trọng:</strong> Vui lòng nhấn nút <strong>ĐẶT HÀNG</strong> trước. Hệ thống sẽ hiển thị mã QR thanh toán chính thức chứa <strong>mã đơn hàng của bạn</strong> để quét chuyển khoản tự động, giúp hệ thống xác nhận thanh toán ngay lập tức.
+                            </p>
+                        </div>
                     </div>
 
                     <style>
@@ -460,17 +472,13 @@
 
             try {
                 const res = await ApiClient.get(`/checkout/cart-qr?shipping_method=${shipMethod}`);
-                if (res.qr_url) {
-                    const img = document.getElementById('preview-qr-image');
-                    img.src = res.qr_url;
-                    img.onload = () => {
-                        document.getElementById('qr-loading').classList.add('hidden');
-                        document.getElementById('qr-image-wrap').classList.remove('hidden');
-                    };
-                    img.onerror = () => {
-                        document.getElementById('qr-loading').classList.add('hidden');
-                        document.getElementById('qr-error').classList.remove('hidden');
-                    };
+                if (res.bank_code && res.bank_account_number) {
+                    document.getElementById('preview-bank-code').innerText = res.bank_code;
+                    document.getElementById('preview-account-number').innerText = res.bank_account_number;
+                    document.getElementById('preview-account-name').innerText = res.bank_account_name || '';
+                    
+                    document.getElementById('qr-loading').classList.add('hidden');
+                    document.getElementById('qr-image-wrap').classList.remove('hidden');
                 } else {
                     document.getElementById('qr-loading').classList.add('hidden');
                     document.getElementById('qr-error').classList.remove('hidden');
