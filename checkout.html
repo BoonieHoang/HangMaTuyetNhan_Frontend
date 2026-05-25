@@ -295,7 +295,9 @@
                         <p class="font-bold mb-4 text-primary">Vui lòng quét mã QR để thanh toán:</p>
                         <img id="qr-image" src="" alt="VietQR"
                             class="w-64 h-64 object-contain mx-auto shadow-sm border rounded bg-white p-2">
-                        <p class="text-sm text-gray-500 mt-4">Đơn hàng sẽ được xử lý ngay sau khi nhận được thanh toán.
+                        <p class="text-sm text-gray-500 mt-4">
+                            Nội dung chuyển khoản: <span id="success-transfer-content" class="font-bold text-primary"></span><br>
+                            Đơn hàng sẽ được xử lý ngay sau khi nhận được thanh toán.
                         </p>
                     </div>
 
@@ -532,6 +534,7 @@
                 if (res.qr_url) {
                     document.getElementById('qr-container').classList.remove('hidden');
                     document.getElementById('qr-image').src = res.qr_url;
+                    document.getElementById('success-transfer-content').innerText = "THANH TOAN DON HANG " + res.order.order_code;
                 }
             } catch (err) {
                 showNotification(err.message || 'Lỗi khi đặt hàng', 'error');
