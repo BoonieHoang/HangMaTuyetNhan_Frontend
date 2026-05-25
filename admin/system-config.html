@@ -49,7 +49,8 @@
                 <i data-lucide="layers" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý danh mục</span>
             </a>
-            <a href="rituals.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="rituals.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="book-open" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý nghi lễ</span>
             </a>
@@ -89,9 +90,20 @@
                         <h2 class="text-lg font-bold mb-4 text-primary">Cấu hình thanh toán VietQR</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <label class="block font-medium mb-1">Mã ngân hàng (BIN/Tên viết tắt)</label>
-                                <input type="text" id="bank_code" name="configs[bank_code]" placeholder="VD: VCB, MB, ICB"
-                                    class="w-full border rounded px-3 py-2.5 outline-none focus:border-primary">
+                                <label class="block font-medium mb-1">Ngân hàng nhận thanh toán</label>
+                                <select id="bank_code" name="configs[bank_code]"
+                                    class="w-full border rounded px-3 py-2.5 outline-none focus:border-primary bg-white">
+                                    <option value="">-- Chọn ngân hàng --</option>
+                                    <option value="VCB">Vietcombank - Ngân hàng TMCP Ngoại thương Việt Nam</option>
+                                    <option value="ICB">VietinBank - Ngân hàng TMCP Công thương Việt Nam</option>
+                                    <option value="TCB">Techcombank - Ngân hàng TMCP Kỹ thương Việt Nam</option>
+                                    <option value="BIDV">BIDV - Ngân hàng TMCP Đầu tư và Phát triển Việt Nam</option>
+                                    <option value="MB">MBBank - Ngân hàng TMCP Quân đội</option>
+                                    <option value="VPB">VPBank - Ngân hàng TMCP Việt Nam Thịnh Vượng</option>
+                                    <option value="TPB">TPBank - Ngân hàng TMCP Tiên Phong</option>
+                                    <option value="STB">Sacombank - Ngân hàng TMCP Sài Gòn Thương Tín</option>
+                                    <option value="ACB">ACB - Ngân hàng TMCP Á Châu</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block font-medium mb-1">Số tài khoản</label>
@@ -118,7 +130,8 @@
 
                     <div class="text-right pt-6">
                         <button type="submit" id="btn-submit"
-                            class="bg-primary text-white px-8 py-2.5 rounded shadow hover:opacity-90 font-bold uppercase tracking-wider text-xs">Lưu Cấu Hình</button>
+                            class="bg-primary text-white px-8 py-2.5 rounded shadow hover:opacity-90 font-bold uppercase tracking-wider text-xs">Lưu
+                            Cấu Hình</button>
                     </div>
                 </form>
             </div>
@@ -143,7 +156,22 @@
                 const conf = res;
 
                 if (conf) {
-                    document.getElementById('bank_code').value = conf.bank_code || '';
+                    let bankCode = conf.bank_code || '';
+                    const cleanCode = bankCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    const map = {
+                        'VP': 'VPB', 'VPBANK': 'VPB',
+                        'VIETCOMBANK': 'VCB',
+                        'VIETINBANK': 'ICB', 'VIETIN': 'ICB', 'CTG': 'ICB',
+                        'TECHCOMBANK': 'TCB', 'TECHCOM': 'TCB',
+                        'MBBANK': 'MB',
+                        'AGRIBANK': 'VBA', 'AGRI': 'VBA',
+                        'TPBANK': 'TPB',
+                        'HDBANK': 'HDB', 'HD': 'HDB',
+                        'LPBANK': 'LPB', 'LP': 'LPB'
+                    };
+                    const finalCode = map[cleanCode] || cleanCode;
+
+                    document.getElementById('bank_code').value = finalCode;
                     document.getElementById('bank_account_number').value = conf.bank_account_number || '';
                     document.getElementById('bank_account_name').value = conf.bank_account_name || '';
                     document.getElementById('shipping_fee_default').value = conf.shipping_fee_default || '0';
