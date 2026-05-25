@@ -391,9 +391,12 @@
                 try {
                     const feeRes = await ApiClient.get('/shipping-fee');
                     SHIPPING_FEE = feeRes.shipping_fee || 20000;
+                } catch (e) {
+                    SHIPPING_FEE = 20000; // mặc định nếu API lỗi
+                } finally {
                     const feeLabel = document.getElementById('ship-fee-label');
                     if (feeLabel) feeLabel.textContent = '(' + SHIPPING_FEE.toLocaleString('vi-VN') + ' VNĐ)';
-                } catch (e) { /* dùng mặc định */ }
+                }
 
                 if (!currentCart.items || currentCart.items.length === 0) {
                     showNotification('Giỏ hàng trống!', 'error');

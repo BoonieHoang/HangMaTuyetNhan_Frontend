@@ -86,22 +86,6 @@
 
                 <form id="config-form" class="space-y-6">
                     <div class="border-b pb-6">
-                        <h2 class="text-lg font-bold mb-4 text-primary">Thông tin chung</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <label class="block font-medium mb-1">Tên cửa hàng</label>
-                                <input type="text" id="store_name" name="configs[store_name]"
-                                    class="w-full border rounded px-3 py-2.5 outline-none focus:border-primary">
-                            </div>
-                            <div>
-                                <label class="block font-medium mb-1">Số điện thoại hỗ trợ</label>
-                                <input type="text" id="store_phone" name="configs[store_phone]"
-                                    class="w-full border rounded px-3 py-2.5 outline-none focus:border-primary">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-b pb-6">
                         <h2 class="text-lg font-bold mb-4 text-primary">Cấu hình thanh toán VietQR</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
@@ -159,8 +143,6 @@
                 const conf = res;
 
                 if (conf) {
-                    document.getElementById('store_name').value = conf.store_name || '';
-                    document.getElementById('store_phone').value = conf.store_phone || '';
                     document.getElementById('bank_code').value = conf.bank_code || '';
                     document.getElementById('bank_account_number').value = conf.bank_account_number || '';
                     document.getElementById('bank_account_name').value = conf.bank_account_name || '';
@@ -180,8 +162,6 @@
 
             const payload = {
                 configs: {
-                    store_name: document.getElementById('store_name').value,
-                    store_phone: document.getElementById('store_phone').value,
                     bank_code: document.getElementById('bank_code').value,
                     bank_account_number: document.getElementById('bank_account_number').value,
                     bank_account_name: document.getElementById('bank_account_name').value,
