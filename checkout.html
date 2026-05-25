@@ -220,10 +220,18 @@
                             </div>
                         </label>
                     </div>
-                    <div id="payment-qr-preview" class="hidden mt-6 p-6 border-2 border-primary/20 rounded-xl bg-bgtheme/10 text-center animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div id="payment-qr-preview" class="hidden mt-6 p-6 border-2 border-primary/20 rounded-xl bg-bgtheme/10 text-center">
                         <p class="text-sm font-bold text-primary mb-4">QUÉT MÃ QR ĐỂ THANH TOÁN TẠI ĐÂY</p>
-                        <div class="bg-white p-3 rounded-lg inline-block shadow-sm border border-gray-100">
-                            <img id="preview-qr-image" src="" alt="VietQR Preview" class="w-48 h-48 object-contain mx-auto">
+                        <!-- Loading -->
+                        <div id="qr-loading" class="py-8 text-gray-400 text-sm">Đang tải mã QR...</div>
+                        <!-- QR Image -->
+                        <div id="qr-image-wrap" class="hidden bg-white p-3 rounded-lg inline-block shadow-sm border border-gray-100">
+                            <img id="preview-qr-image" src="" alt="VietQR" class="w-48 h-48 object-contain mx-auto">
+                        </div>
+                        <!-- Error -->
+                        <div id="qr-error" class="hidden py-6 text-red-500 text-sm">
+                            ⚠️ Chưa cấu hình thông tin ngân hàng.<br>
+                            <span class="text-gray-400 text-xs">Vui lòng liên hệ quản trị viên.</span>
                         </div>
                         <p class="text-[10px] text-gray-500 mt-4 leading-relaxed">
                             Nội dung chuyển khoản: <span class="font-bold text-primary">THANH TOAN DON HANG</span><br>
@@ -442,14 +450,33 @@
 
         async function loadPreviewQR() {
             const shipMethod = document.querySelector('input[name="shipping_method"]:checked').value;
-            const img = document.getElementById('preview-qr-image');
-            img.classList.add('opacity-50');
+
+            // Reset về trạng thái loading
+            document.getElementById('qr-loading').classList.remove('hidden');
+            document.getElementById('qr-image-wrap').classList.add('hidden');
+            document.getElementById('qr-error').classList.add('hidden');
+
             try {
                 const res = await ApiClient.get(`/checkout/cart-qr?shipping_method=${shipMethod}`);
-                img.src = res.qr_url;
-                img.classList.remove('opacity-50');
+                if (res.qr_url) {
+                    const img = document.getElementById('preview-qr-image');
+                    img.src = res.qr_url;
+                    img.onload = () => {
+                        document.getElementById('qr-loading').classList.add('hidden');
+                        document.getElementById('qr-image-wrap').classList.remove('hidden');
+                    };
+                    img.onerror = () => {
+                        document.getElementById('qr-loading').classList.add('hidden');
+                        document.getElementById('qr-error').classList.remove('hidden');
+                    };
+                } else {
+                    document.getElementById('qr-loading').classList.add('hidden');
+                    document.getElementById('qr-error').classList.remove('hidden');
+                }
             } catch (err) {
                 console.error('Failed to load QR preview', err);
+                document.getElementById('qr-loading').classList.add('hidden');
+                document.getElementById('qr-error').classList.remove('hidden');
             }
         }
 
