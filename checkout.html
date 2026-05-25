@@ -166,7 +166,7 @@
                                 </svg>
                                 <span class="text-[12px] font-bold text-gray-800 uppercase tracking-tighter">Ship tận
                                     nhà</span>
-                                <span class="text-[11px] text-gray-500 font-medium">(15.000 VNĐ)</span>
+                                <span class="text-[11px] text-gray-500 font-medium" id="ship-fee-label">(đang tải...)</span>
                             </div>
                         </label>
                         <label class="cursor-pointer group">
@@ -347,7 +347,7 @@
     <script src="assets/js/chatbot.js"></script>
     <script>
         let currentCart = null;
-        const SHIPPING_FEE = 15000;
+        let SHIPPING_FEE = 20000; // sẽ được đọc từ API
 
         document.addEventListener('DOMContentLoaded', async () => {
             Auth.requireLogin();
@@ -387,6 +387,14 @@
                 const cartRes = await ApiClient.get('/cart');
                 currentCart = cartRes.data;
 
+                // Đọc phí ship từ DB
+                try {
+                    const feeRes = await ApiClient.get('/shipping-fee');
+                    SHIPPING_FEE = feeRes.shipping_fee || 20000;
+                    const feeLabel = document.getElementById('ship-fee-label');
+                    if (feeLabel) feeLabel.textContent = '(' + SHIPPING_FEE.toLocaleString('vi-VN') + ' VNĐ)';
+                } catch (e) { /* dùng mặc định */ }
+
                 if (!currentCart.items || currentCart.items.length === 0) {
                     showNotification('Giỏ hàng trống!', 'error');
                     window.location.href = 'cart.html';
@@ -417,6 +425,13 @@
                         }
                     });
                 });
+
+                // Nếu bank_transfer đã được chọn sẵn thì auto load QR
+                const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
+                if (selectedPayment && selectedPayment.value === 'bank_transfer') {
+                    document.getElementById('payment-qr-preview').classList.remove('hidden');
+                    loadPreviewQR();
+                }
             } catch (err) {
                 console.error(err);
             }
