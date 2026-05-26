@@ -327,7 +327,7 @@
             <!-- Messages -->
             <div id="cb-messages">
                 <div class="cb-row bot">
-                    <div class="cb-bubble">Xin chào! Tôi là trợ lý <strong>Smart Calendar</strong>. Bạn có thể hỏi tôi về ngày lễ âm lịch, nghi thức thờ cúng và sản phẩm phù hợp.</div>
+                    <div class="cb-bubble">Xin chào! Tôi là <strong> Trợ lý tư vấn đồ lễ</strong>. Bạn có thể hỏi tôi về ngày lễ âm lịch, nghi thức thờ cúng và sản phẩm phù hợp.</div>
                 </div>
             </div>
 
@@ -363,35 +363,35 @@
     document.body.appendChild(toggleBtn);
 
     // ── Refs ───────────────────────────────────────────────────────────
-    const panel    = document.getElementById('chatbot-panel');
+    const panel = document.getElementById('chatbot-panel');
     const messages = document.getElementById('cb-messages');
-    const form     = document.getElementById('cb-form');
-    const input    = document.getElementById('cb-input');
-    const sendBtn  = document.getElementById('cb-send');
+    const form = document.getElementById('cb-form');
+    const input = document.getElementById('cb-input');
+    const sendBtn = document.getElementById('cb-send');
     const closeBtn = document.getElementById('cb-close');
-    const expandBtn= document.getElementById('cb-expand');
+    const expandBtn = document.getElementById('cb-expand');
     const expandIcon = document.getElementById('cb-expand-icon');
-    const chipsEl  = document.getElementById('cb-chips');
-    const dateBar  = document.getElementById('cb-date-bar');
+    const chipsEl = document.getElementById('cb-chips');
+    const dateBar = document.getElementById('cb-date-bar');
 
     // ── Date bar ───────────────────────────────────────────────────────
     (function renderDateBar() {
-        const d    = new Date();
-        const days = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
-        const dd   = String(d.getDate()).padStart(2,'0');
-        const mm   = String(d.getMonth()+1).padStart(2,'0');
+        const d = new Date();
+        const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
         const yyyy = d.getFullYear();
         dateBar.textContent = `${days[d.getDay()]}, ${dd}/${mm}/${yyyy}`;
     })();
 
     // ── State ──────────────────────────────────────────────────────────
-    let isOpen     = false;
+    let isOpen = false;
     let isExpanded = false;
-    let history    = [];
+    let history = [];
 
     // ── Expand SVG icons ───────────────────────────────────────────────
-    const svgExpand  = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>`;
-    const svgCollapse= `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0l5 0M4 4v5m11-1l5-5m0 0l-5 0m5 0v5M9 15l-5 5m0 0h5m-5 0v-5m11 5l5-5m0 5h-5m5 0v-5"/>`;
+    const svgExpand = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>`;
+    const svgCollapse = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0l5 0M4 4v5m11-1l5-5m0 0l-5 0m5 0v5M9 15l-5 5m0 0h5m-5 0v-5m11 5l5-5m0 5h-5m5 0v-5"/>`;
 
     // ── Open / Close ───────────────────────────────────────────────────
     toggleBtn.addEventListener('click', () => {
@@ -443,13 +443,13 @@
             const res = await ApiClient.post('/chatbot', { message: msg, history });
             removeTyping(typingId);
 
-            const text     = res.response || '';
+            const text = res.response || '';
             const products = res.suggested_products || [];
 
             appendBubble('bot', text, products);
 
-            history.push({ role: 'user',      content: msg });
-            history.push({ role: 'assistant',  content: text });
+            history.push({ role: 'user', content: msg });
+            history.push({ role: 'assistant', content: text });
             if (history.length > 20) history = history.slice(-20);
         } catch (err) {
             removeTyping(typingId);
@@ -462,7 +462,7 @@
     // ── Append bubble ──────────────────────────────────────────────────
     function appendBubble(role, content, products = []) {
         const isUser = role === 'user';
-        const row    = document.createElement('div');
+        const row = document.createElement('div');
         row.className = `cb-row ${isUser ? 'user' : 'bot'}`;
 
         // Parse markdown for bot
@@ -473,8 +473,8 @@
             } else {
                 html = content
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g,     '<em>$1</em>')
-                    .replace(/\n/g,            '<br>');
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
             }
         }
 
@@ -494,7 +494,7 @@
 
     // ── Typing indicator ───────────────────────────────────────────────
     function showTyping() {
-        const id  = 'typing-' + Date.now();
+        const id = 'typing-' + Date.now();
         const row = document.createElement('div');
         row.className = 'cb-row bot';
         row.id = id;
@@ -509,7 +509,7 @@
 
     // ── Product cards ──────────────────────────────────────────────────
     function buildProductCards(products) {
-        const wrap  = document.createElement('div');
+        const wrap = document.createElement('div');
         wrap.className = 'cb-products-wrap';
 
         const label = document.createElement('div');
@@ -521,13 +521,13 @@
         scroll.className = 'cb-products-scroll';
 
         products.slice(0, 4).forEach(p => {
-            const price   = parseInt(p.price).toLocaleString('vi-VN');
-            const imgSrc  = p.image || 'https://placehold.co/140x90/f5f2eb/9b7553?text=SP';
-            const card    = document.createElement('a');
+            const price = parseInt(p.price).toLocaleString('vi-VN');
+            const imgSrc = p.image || 'https://placehold.co/140x90/f5f2eb/9b7553?text=SP';
+            const card = document.createElement('a');
             card.className = 'cb-product-card';
-            card.href      = `product-detail.html?slug=${encodeURIComponent(p.slug)}`;
-            card.target    = '_blank';
-            card.rel       = 'noopener';
+            card.href = `product-detail.html?slug=${encodeURIComponent(p.slug)}`;
+            card.target = '_blank';
+            card.rel = 'noopener';
             card.innerHTML = `
                 <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.name)}" loading="lazy"
                      onerror="this.src='https://placehold.co/140x90/f5f2eb/9b7553?text=SP'">
@@ -546,8 +546,8 @@
     // ── Helpers ────────────────────────────────────────────────────────
     function escapeHtml(str) {
         return String(str)
-            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     // ── Global: Smart Calendar integration ────────────────────────────
