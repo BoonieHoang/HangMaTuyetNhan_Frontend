@@ -192,6 +192,39 @@
             </div>
         </div>
     </section>
+
+    <!-- Products Section -->
+    <section class="container mx-auto px-4 mb-20">
+        <div
+            class="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 border-b border-gray-200 pb-4 gap-4">
+            <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary text-center sm:text-left">Sản phẩm tâm
+                linh nổi bật</h2>
+            <a href="products.html?sort=popular"
+                class="text-xs font-bold text-primary tracking-widest uppercase hover:text-accent transition whitespace-nowrap">Xem
+                tất cả -></a>
+        </div>
+
+        <div id="featured-products-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <!-- Loading placeholder -->
+            <div class="col-span-full text-center py-10 text-gray-500">Đang tải sản phẩm...</div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 mb-20">
+        <div
+            class="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 border-b border-gray-200 pb-4 gap-4">
+            <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary text-center sm:text-left">Sản phẩm mới</h2>
+            <a href="products.html?sort=newest"
+                class="text-xs font-bold text-primary tracking-widest uppercase hover:text-accent transition whitespace-nowrap">Xem
+                tất cả -></a>
+        </div>
+
+        <div id="new-products-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <!-- Loading placeholder -->
+            <div class="col-span-full text-center py-10 text-gray-500">Đang tải sản phẩm...</div>
+        </div>
+    </section>
+
     <!-- ═══ SMART CALENDAR ═══ -->
     <section class="container mx-auto px-4 mb-20" id="smart-calendar">
         <style>
@@ -375,11 +408,8 @@
         <div class="text-center mb-10">
             <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary inline-block relative pb-3">
                 Smart Calendar
-                <div class="absolute bottom-0 left-[20%] right-[20%] h-0.5 bg-accent"></div>
             </h2>
-            <p class="text-sm text-gray-500 mt-3">Các ngày lễ âm lịch sắp tới và gợi ý lễ vật phù hợp</p>
         </div>
-
         <!-- Cards container -->
         <div id="sc-grid">
             <div class="text-center py-10 text-gray-400 text-sm col-span-full" id="sc-loading">Đang tải lịch...</div>
@@ -387,19 +417,102 @@
     </section>
 
     <script>
-            (function () {
-                var HOLIDAYS = [
-                    {
-                        name: 'Rằm tháng 5',
-                        lunarLabel: '15/05 Âm lịch',
-                        date: new Date(2026, 4, 31),
-                        description: 'Ngày Rằm tháng 5 âm lịch, cúng gia tiên và thổ địa cầu bình an. Đây cũng là dịp nhiều gia đình sắm lễ vật thắp hương.',
-                        products: ['Hương thờ trầm', 'Nến đỏ thờ cúng', 'Vàng mã gia tiên'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật và nghi thức cho Rằm tháng 5 âm lịch'
-                    },
-                    {
-                        name: 'Mùng Một tháng 6',
+    (function () {
+        var API_BASE = 'https://hangmatuyetnhanbackend-production.up.railway.app/api';
+        var grid = document.getElementById('sc-grid');
+
+        // ── Loading state ──────────────────────────────────────────────
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Đang tải lịch ngày lễ từ hệ thống...</div>';
+
+        // ── Fetch from backend (holidays + AI enrichment) ──────────────
+        fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
+            .then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(function (data) { renderCalendar(data); })
+            .catch(function (err) {
+                console.warn('Smart Calendar fetch failed:', err);
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
+            });
+
+        // ── Render calendar cards ──────────────────────────────────────
+        function renderCalendar(holidays) {
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter to upcoming only, sort by date, take 3
+            var upcoming = (holidays || [])
+                .filter(function (h) { return h.nextDate && new Date(h.nextDate) >= today; })
+                .sort(function (a, b) { return new Date(a.nextDate) - new Date(b.nextDate); })
+                .slice(0, 3);
+
+            if (!upcoming.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không có ngày lễ sắp tới trong danh sách.</div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            upcoming.forEach(function (h) {
+                var days     = Math.ceil((new Date(h.nextDate) - today) / 86400000);
+                var badgeClass = days <= 7 ? 'urgent' : (days <= 30 ? 'soon' : 'later');
+                var badgeLabel = days === 0 ? 'Hôm nay' : (days === 1 ? 'Ngày mai' : days + ' ngày nữa');
+
+                // Product chips from actual DB products
+                var chips = '';
+                if (h.products && h.products.length) {
+                    chips = h.products.map(function (p) {
+                        return '<a href="products.html?search=' + encodeURIComponent(p.name) + '" class="sc-chip">' + p.name + '</a>';
+                    }).join('');
+                } else {
+                    chips = '<span class="sc-chip" style="color:#9b9b9b;border-style:dashed;">Đang cập nhật...</span>';
+                }
+
+                // "Xem sản phẩm" links to holiday filtered products page
+                var productLink = 'products.html';
+
+                var card = document.createElement('div');
+                card.className = 'sc-card';
+                card.innerHTML = [
+                    '<span class="sc-badge ' + badgeClass + '">' + badgeLabel + '</span>',
+                    '<div class="sc-lunar">' + (h.lunarLabel || '') + '</div>',
+                    '<div class="sc-name">' + h.name + '</div>',
+                    '<p class="sc-desc">' + (h.description || '') + '</p>',
+                    '<div class="sc-products-label">Sản phẩm gợi ý từ cửa hàng:</div>',
+                    '<div class="sc-product-chips">' + chips + '</div>',
+                    '<div class="sc-actions">',
+                    '  <a href="' + productLink + '" class="sc-btn-primary">Xem sản phẩm</a>',
+                    '  <button class="sc-btn-secondary sc-ask-btn">Hỏi AI</button>',
+                    '</div>',
+                ].join('');
+
+                // Bind "Hỏi AI" safely via event listener
+                var aiQuery = 'Tư vấn lễ vật và nghi thức chuẩn bị cho ' + h.name;
+                card.querySelector('.sc-ask-btn').addEventListener('click', (function (q) {
+                    return function () {
+                        if (typeof window.openChatbotWithMessage === 'function') {
+                            window.openChatbotWithMessage(q);
+                            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                        } else {
+                            var panel = document.getElementById('chatbot-panel');
+                            var input = document.getElementById('cb-input');
+                            if (panel) {
+                                panel.classList.add('cb-open');
+                                if (input) { input.value = q; input.focus(); }
+                            }
+                        }
+                    };
+                })(aiQuery));
+
+                grid.appendChild(card);
+            });
+        }
+    })();
+    </script>
+
+
+    <!-- About Section -->
+
                         lunarLabel: '01/06 Âm lịch',
                         date: new Date(2026, 5, 15),
                         description: 'Mồng Một đầu tháng 6 âm lịch, thắp hương cúng gia tiên, thổ công và thần tài cầu may mắn tài lộc.',
@@ -550,38 +663,6 @@
             })();
 
     </script>
-    <!-- Products Section -->
-    <section class="container mx-auto px-4 mb-20">
-        <div
-            class="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 border-b border-gray-200 pb-4 gap-4">
-            <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary text-center sm:text-left">Sản phẩm tâm
-                linh nổi bật</h2>
-            <a href="products.html?sort=popular"
-                class="text-xs font-bold text-primary tracking-widest uppercase hover:text-accent transition whitespace-nowrap">Xem
-                tất cả -></a>
-        </div>
-
-        <div id="featured-products-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            <!-- Loading placeholder -->
-            <div class="col-span-full text-center py-10 text-gray-500">Đang tải sản phẩm...</div>
-        </div>
-    </section>
-
-    <section class="container mx-auto px-4 mb-20">
-        <div
-            class="flex flex-col sm:flex-row justify-between items-center sm:items-end mb-8 border-b border-gray-200 pb-4 gap-4">
-            <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary text-center sm:text-left">Sản phẩm mới</h2>
-            <a href="products.html?sort=newest"
-                class="text-xs font-bold text-primary tracking-widest uppercase hover:text-accent transition whitespace-nowrap">Xem
-                tất cả -></a>
-        </div>
-
-        <div id="new-products-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            <!-- Loading placeholder -->
-            <div class="col-span-full text-center py-10 text-gray-500">Đang tải sản phẩm...</div>
-        </div>
-    </section>
-
 
     <!-- About Section -->
 
