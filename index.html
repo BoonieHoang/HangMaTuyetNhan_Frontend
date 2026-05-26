@@ -225,26 +225,135 @@
         </div>
     </section>
 
-    <!-- ═══ SMART CALENDAR ═══ -->
-    <section class="container mx-auto px-4 mb-20" id="smart-calendar">
+    <!-- ═══ SMART CALENDAR (FLOATING BUTTON & PANEL) ═══ -->
+    <div id="sc-container">
         <style>
+            #sc-container {
+                position: fixed;
+                bottom: 94px;
+                right: 24px;
+                z-index: 9998;
+            }
+
+            /* Floating Button */
+            #sc-toggle {
+                width: 54px;
+                height: 54px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #c49a45, #a67c2e);
+                border: none;
+                cursor: pointer;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 20px rgba(196,154,69,0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            #sc-toggle:hover {
+                transform: scale(1.08);
+                box-shadow: 0 6px 28px rgba(196,154,69,0.5);
+            }
+
+            /* Sliding Panel */
+            #sc-panel {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                bottom: 72px;
+                right: 0;
+                width: 380px;
+                height: 520px;
+                background: #fff;
+                border-radius: 14px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+                border: 1px solid #e5e7eb;
+                overflow: hidden;
+                transform: scale(0.92) translateY(16px);
+                opacity: 0;
+                pointer-events: none;
+                transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s ease;
+                transform-origin: bottom right;
+            }
+            #sc-panel.sc-open {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+                pointer-events: all;
+            }
+            @media (max-width: 440px) {
+                #sc-panel {
+                    width: calc(100vw - 48px);
+                    right: -12px;
+                }
+            }
+
+            /* Header */
+            #sc-header {
+                background: linear-gradient(135deg, #c49a45 0%, #a67c2e 100%);
+                color: #fff;
+                padding: 14px 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-shrink: 0;
+            }
+            #sc-title {
+                font-weight: 700;
+                font-size: 14px;
+                letter-spacing: 0.02em;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .sc-close-btn {
+                background: rgba(255,255,255,0.15);
+                border: none;
+                cursor: pointer;
+                border-radius: 6px;
+                color: #fff;
+                padding: 5px;
+                display: flex;
+                align-items: center;
+                transition: background 0.2s;
+            }
+            .sc-close-btn:hover {
+                background: rgba(255,255,255,0.28);
+            }
+
+            /* Body */
+            #sc-body {
+                flex: 1;
+                overflow-y: auto;
+                padding: 16px;
+                background: #faf8f5;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+            #sc-body::-webkit-scrollbar {
+                width: 4px;
+            }
+            #sc-body::-webkit-scrollbar-thumb {
+                background: #d4b896;
+                border-radius: 4px;
+            }
+
+            /* Cards Style */
             .sc-card {
                 background: #fff;
                 border: 1px solid #e8ddd0;
-                border-radius: 14px;
-                padding: 22px;
+                border-radius: 12px;
+                padding: 16px;
                 position: relative;
                 overflow: hidden;
-                transition: box-shadow 0.25s, transform 0.25s;
+                transition: box-shadow 0.2s, transform 0.2s;
                 display: flex;
                 flex-direction: column;
             }
-
             .sc-card:hover {
-                box-shadow: 0 10px 32px rgba(111, 42, 42, 0.12);
-                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(196,154,69,0.12);
+                transform: translateY(-2px);
             }
-
             .sc-card::before {
                 content: '';
                 position: absolute;
@@ -252,262 +361,267 @@
                 left: 0;
                 right: 0;
                 height: 3px;
-                background: linear-gradient(90deg, #6F2A2A, #c49a45);
+                background: linear-gradient(90deg, #c49a45, #a67c2e);
             }
-
             .sc-badge {
-                display: inline-block;
-                font-size: 10.5px;
+                align-self: flex-start;
+                font-size: 10px;
                 font-weight: 700;
-                padding: 3px 10px;
+                padding: 3px 9px;
                 border-radius: 20px;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
-
             .sc-badge.urgent {
                 background: #fee2e2;
                 color: #991b1b;
             }
-
             .sc-badge.soon {
                 background: #fef3c7;
                 color: #92400e;
             }
-
             .sc-badge.later {
                 background: #f0fdf4;
                 color: #166534;
             }
-
             .sc-lunar {
-                font-size: 12px;
+                font-size: 11px;
                 color: #c49a45;
                 font-weight: 600;
-                margin-bottom: 8px;
-                letter-spacing: 0.03em;
+                margin-bottom: 6px;
+                letter-spacing: 0.02em;
             }
-
             .sc-name {
                 font-family: 'Playfair Display', serif;
-                font-size: 19px;
+                font-size: 16px;
                 font-weight: 700;
                 color: #6F2A2A;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
                 line-height: 1.3;
             }
-
             .sc-desc {
-                font-size: 13px;
-                color: #6b7280;
-                line-height: 1.6;
-                margin-bottom: 14px;
-                flex: 1;
+                font-size: 12px;
+                color: #4b5563;
+                line-height: 1.5;
+                margin-bottom: 12px;
             }
-
             .sc-products-label {
-                font-size: 10.5px;
+                font-size: 10px;
                 font-weight: 700;
                 text-transform: uppercase;
-                letter-spacing: 0.08em;
+                letter-spacing: 0.05em;
                 color: #9b7553;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
             }
-
             .sc-product-chips {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 6px;
-                margin-bottom: 16px;
+                gap: 5px;
+                margin-bottom: 12px;
             }
-
             .sc-chip {
                 background: #fdf6ec;
                 border: 1px solid #e8ddd0;
                 color: #6F2A2A;
-                font-size: 11.5px;
-                padding: 4px 10px;
+                font-size: 11px;
+                padding: 3px 8px;
                 border-radius: 20px;
                 font-weight: 500;
                 text-decoration: none;
                 display: inline-block;
                 transition: background 0.18s, border-color 0.18s;
-                cursor: pointer;
             }
-
             .sc-chip:hover {
                 background: #f5e8d4;
                 border-color: #c49a45;
-                color: #6F2A2A;
             }
-
             .sc-actions {
                 display: flex;
-                gap: 10px;
+                gap: 8px;
                 margin-top: auto;
             }
-
             .sc-btn-primary {
                 flex: 1;
                 text-align: center;
                 background: #6F2A2A;
                 color: #fff;
-                font-size: 12px;
+                font-size: 11.5px;
                 font-weight: 700;
-                padding: 9px 12px;
-                border-radius: 8px;
+                padding: 7px 10px;
+                border-radius: 6px;
                 text-decoration: none;
                 border: none;
                 cursor: pointer;
                 transition: background 0.2s;
-                letter-spacing: 0.02em;
             }
-
             .sc-btn-primary:hover {
                 background: #8B1A1A;
             }
-
             .sc-btn-secondary {
                 flex: 1;
                 text-align: center;
                 background: transparent;
                 color: #c49a45;
-                font-size: 12px;
+                font-size: 11.5px;
                 font-weight: 700;
-                padding: 9px 12px;
-                border-radius: 8px;
+                padding: 7px 10px;
+                border-radius: 6px;
                 border: 1.5px solid #c49a45;
                 cursor: pointer;
                 transition: background 0.2s, color 0.2s;
-                letter-spacing: 0.02em;
             }
-
             .sc-btn-secondary:hover {
                 background: #c49a45;
                 color: #fff;
             }
-
-            #sc-grid {
-                display: grid;
-                gap: 20px;
-            }
-
-            @media (min-width: 768px) {
-                #sc-grid {
-                    grid-template-columns: repeat(3, 1fr);
-                }
-            }
-
-            @media (max-width: 767px) {
-                #sc-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
         </style>
 
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary inline-block relative pb-3">
-                Smart Calendar
-            </h2>
+        <!-- Floating Button -->
+        <button id="sc-toggle" title="Lịch Lễ Tâm Linh">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px; height:24px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+        </button>
+
+        <!-- Sidebar Panel -->
+        <div id="sc-panel">
+            <div id="sc-header">
+                <div id="sc-title">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px; height:20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Lịch Lễ Tâm Linh</span>
+                </div>
+                <button class="sc-close-btn" id="sc-close" title="Đóng">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px; height:20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="sc-body">
+                <div style="text-align:center;padding:40px 0;color:#9b7553;font-size:13px;" id="sc-loading">Đang tải lịch ngày lễ...</div>
+            </div>
         </div>
-        <!-- Cards container -->
-        <div id="sc-grid">
-            <div class="text-center py-10 text-gray-400 text-sm col-span-full" id="sc-loading">Đang tải lịch...</div>
-        </div>
-    </section>
+    </div>
 
     <script>
-            (function () {
-                var API_BASE = 'https://hangmatuyetnhanbackend-production.up.railway.app/api';
-                var grid = document.getElementById('sc-grid');
+        (function () {
+            var API_BASE = 'https://hangmatuyetnhanbackend-production.up.railway.app/api';
+            var toggleBtn = document.getElementById('sc-toggle');
+            var closeBtn = document.getElementById('sc-close');
+            var panel = document.getElementById('sc-panel');
+            var body = document.getElementById('sc-body');
 
-                // ── Loading state ──────────────────────────────────────────────
-                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Đang tải lịch ngày lễ từ hệ thống...</div>';
+            // ── Toggle Open/Close ──────────────────────────────────────────
+            toggleBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                panel.classList.toggle('sc-open');
+                
+                // Đóng chatbot panel nếu nó đang mở để tránh chồng lấn
+                var cbPanel = document.getElementById('chatbot-panel');
+                if (cbPanel && cbPanel.classList.contains('cb-open') && panel.classList.contains('sc-open')) {
+                    cbPanel.classList.remove('cb-open');
+                }
+            });
 
-                // ── Fetch from backend (holidays + AI enrichment) ──────────────
-                fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
-                    .then(function (r) {
-                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                        return r.json();
-                    })
-                    .then(function (data) { renderCalendar(data); })
-                    .catch(function (err) {
-                        console.warn('Smart Calendar fetch failed:', err);
-                        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
-                    });
+            closeBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                panel.classList.remove('sc-open');
+            });
 
-                // ── Render calendar cards ──────────────────────────────────────
-                function renderCalendar(holidays) {
-                    var today = new Date();
-                    today.setHours(0, 0, 0, 0);
+            // Close when clicking outside
+            document.addEventListener('click', function (e) {
+                if (panel.classList.contains('sc-open') && !panel.contains(e.target) && e.target !== toggleBtn && !toggleBtn.contains(e.target)) {
+                    panel.classList.remove('sc-open');
+                }
+            });
 
-                    // Filter to upcoming only, sort by date, take 3
-                    var upcoming = (holidays || [])
-                        .filter(function (h) { return h.nextDate && new Date(h.nextDate) >= today; })
-                        .sort(function (a, b) { return new Date(a.nextDate) - new Date(b.nextDate); })
-                        .slice(0, 3);
+            // ── Fetch from backend ──────────────────────────────────────────
+            fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(function (data) { renderCalendar(data); })
+                .catch(function (err) {
+                    console.warn('Smart Calendar fetch failed:', err);
+                    body.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9b7553;font-size:13px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
+                });
 
-                    if (!upcoming.length) {
-                        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không có ngày lễ sắp tới trong danh sách.</div>';
-                        return;
+            // ── Render calendar cards vertically ──────────────────────────
+            function renderCalendar(holidays) {
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                var upcoming = (holidays || [])
+                    .filter(function (h) { return h.nextDate && new Date(h.nextDate) >= today; })
+                    .sort(function (a, b) { return new Date(a.nextDate) - new Date(b.nextDate); })
+                    .slice(0, 3);
+
+                if (!upcoming.length) {
+                    body.innerHTML = '<div style="text-align:center;padding:40px 0;color:#9b7553;font-size:13px;">Không có ngày lễ sắp tới trong danh sách.</div>';
+                    return;
+                }
+
+                body.innerHTML = '';
+                upcoming.forEach(function (h) {
+                    var days = Math.ceil((new Date(h.nextDate) - today) / 86400000);
+                    var badgeClass = days <= 7 ? 'urgent' : (days <= 30 ? 'soon' : 'later');
+                    var badgeLabel = days === 0 ? 'Hôm nay' : (days === 1 ? 'Ngày mai' : days + ' ngày nữa');
+
+                    // Product chips
+                    var chips = '';
+                    if (h.products && h.products.length) {
+                        chips = h.products.map(function (p) {
+                            return '<a href="products.html?search=' + encodeURIComponent(p.name) + '" class="sc-chip">' + p.name + '</a>';
+                        }).join('');
+                    } else {
+                        chips = '<span class="sc-chip" style="color:#9b9b9b;border-style:dashed;">Đang cập nhật...</span>';
                     }
 
-                    grid.innerHTML = '';
-                    upcoming.forEach(function (h) {
-                        var days = Math.ceil((new Date(h.nextDate) - today) / 86400000);
-                        var badgeClass = days <= 7 ? 'urgent' : (days <= 30 ? 'soon' : 'later');
-                        var badgeLabel = days === 0 ? 'Hôm nay' : (days === 1 ? 'Ngày mai' : days + ' ngày nữa');
+                    var card = document.createElement('div');
+                    card.className = 'sc-card';
+                    card.innerHTML = [
+                        '<span class="sc-badge ' + badgeClass + '">' + badgeLabel + '</span>',
+                        '<div class="sc-lunar">' + (h.lunarLabel || '') + '</div>',
+                        '<div class="sc-name">' + h.name + '</div>',
+                        '<p class="sc-desc">' + (h.description || '') + '</p>',
+                        '<div class="sc-products-label">Sản phẩm gợi ý:</div>',
+                        '<div class="sc-product-chips">' + chips + '</div>',
+                        '<div class="sc-actions">',
+                        '  <a href="products.html" class="sc-btn-primary">Xem sản phẩm</a>',
+                        '  <button class="sc-btn-secondary sc-ask-btn">Hỏi AI</button>',
+                        '</div>',
+                    ].join('');
 
-                        // Product chips from actual DB products
-                        var chips = '';
-                        if (h.products && h.products.length) {
-                            chips = h.products.map(function (p) {
-                                return '<a href="products.html?search=' + encodeURIComponent(p.name) + '" class="sc-chip">' + p.name + '</a>';
-                            }).join('');
-                        } else {
-                            chips = '<span class="sc-chip" style="color:#9b9b9b;border-style:dashed;">Đang cập nhật...</span>';
-                        }
+                    // Bind "Hỏi AI" click event listener safely
+                    var aiQuery = 'Tư vấn lễ vật và nghi thức chuẩn bị cho ' + h.name;
+                    card.querySelector('.sc-ask-btn').addEventListener('click', (function (q) {
+                        return function (e) {
+                            e.stopPropagation();
+                            // Close calendar panel
+                            panel.classList.remove('sc-open');
 
-                        // "Xem sản phẩm" links to holiday filtered products page
-                        var productLink = 'products.html';
-
-                        var card = document.createElement('div');
-                        card.className = 'sc-card';
-                        card.innerHTML = [
-                            '<span class="sc-badge ' + badgeClass + '">' + badgeLabel + '</span>',
-                            '<div class="sc-lunar">' + (h.lunarLabel || '') + '</div>',
-                            '<div class="sc-name">' + h.name + '</div>',
-                            '<p class="sc-desc">' + (h.description || '') + '</p>',
-                            '<div class="sc-products-label">Sản phẩm gợi ý từ cửa hàng:</div>',
-                            '<div class="sc-product-chips">' + chips + '</div>',
-                            '<div class="sc-actions">',
-                            '  <a href="' + productLink + '" class="sc-btn-primary">Xem sản phẩm</a>',
-                            '  <button class="sc-btn-secondary sc-ask-btn">Hỏi AI</button>',
-                            '</div>',
-                        ].join('');
-
-                        // Bind "Hỏi AI" safely via event listener
-                        var aiQuery = 'Tư vấn lễ vật và nghi thức chuẩn bị cho ' + h.name;
-                        card.querySelector('.sc-ask-btn').addEventListener('click', (function (q) {
-                            return function () {
-                                if (typeof window.openChatbotWithMessage === 'function') {
-                                    window.openChatbotWithMessage(q);
-                                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                                } else {
-                                    var panel = document.getElementById('chatbot-panel');
-                                    var input = document.getElementById('cb-input');
-                                    if (panel) {
-                                        panel.classList.add('cb-open');
-                                        if (input) { input.value = q; input.focus(); }
+                            // Open Chatbot and send message
+                            if (typeof window.openChatbotWithMessage === 'function') {
+                                window.openChatbotWithMessage(q);
+                            } else {
+                                var cbPanel = document.getElementById('chatbot-panel');
+                                var cbInput = document.getElementById('cb-input');
+                                if (cbPanel) {
+                                    cbPanel.classList.add('cb-open');
+                                    if (cbInput) {
+                                        cbInput.value = q;
+                                        cbInput.focus();
                                     }
                                 }
-                            };
-                        })(aiQuery));
+                            }
+                        };
+                    })(aiQuery));
 
-                        grid.appendChild(card);
-                    });
-                }
-            })();
+                    body.appendChild(card);
+                });
+            }
+        })();
     </script>
 
 
