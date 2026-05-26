@@ -417,252 +417,99 @@
     </section>
 
     <script>
-    (function () {
-        var API_BASE = 'https://hangmatuyetnhanbackend-production.up.railway.app/api';
-        var grid = document.getElementById('sc-grid');
-
-        // ── Loading state ──────────────────────────────────────────────
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Đang tải lịch ngày lễ từ hệ thống...</div>';
-
-        // ── Fetch from backend (holidays + AI enrichment) ──────────────
-        fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
-            .then(function (r) {
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                return r.json();
-            })
-            .then(function (data) { renderCalendar(data); })
-            .catch(function (err) {
-                console.warn('Smart Calendar fetch failed:', err);
-                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
-            });
-
-        // ── Render calendar cards ──────────────────────────────────────
-        function renderCalendar(holidays) {
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            // Filter to upcoming only, sort by date, take 3
-            var upcoming = (holidays || [])
-                .filter(function (h) { return h.nextDate && new Date(h.nextDate) >= today; })
-                .sort(function (a, b) { return new Date(a.nextDate) - new Date(b.nextDate); })
-                .slice(0, 3);
-
-            if (!upcoming.length) {
-                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không có ngày lễ sắp tới trong danh sách.</div>';
-                return;
-            }
-
-            grid.innerHTML = '';
-            upcoming.forEach(function (h) {
-                var days     = Math.ceil((new Date(h.nextDate) - today) / 86400000);
-                var badgeClass = days <= 7 ? 'urgent' : (days <= 30 ? 'soon' : 'later');
-                var badgeLabel = days === 0 ? 'Hôm nay' : (days === 1 ? 'Ngày mai' : days + ' ngày nữa');
-
-                // Product chips from actual DB products
-                var chips = '';
-                if (h.products && h.products.length) {
-                    chips = h.products.map(function (p) {
-                        return '<a href="products.html?search=' + encodeURIComponent(p.name) + '" class="sc-chip">' + p.name + '</a>';
-                    }).join('');
-                } else {
-                    chips = '<span class="sc-chip" style="color:#9b9b9b;border-style:dashed;">Đang cập nhật...</span>';
-                }
-
-                // "Xem sản phẩm" links to holiday filtered products page
-                var productLink = 'products.html';
-
-                var card = document.createElement('div');
-                card.className = 'sc-card';
-                card.innerHTML = [
-                    '<span class="sc-badge ' + badgeClass + '">' + badgeLabel + '</span>',
-                    '<div class="sc-lunar">' + (h.lunarLabel || '') + '</div>',
-                    '<div class="sc-name">' + h.name + '</div>',
-                    '<p class="sc-desc">' + (h.description || '') + '</p>',
-                    '<div class="sc-products-label">Sản phẩm gợi ý từ cửa hàng:</div>',
-                    '<div class="sc-product-chips">' + chips + '</div>',
-                    '<div class="sc-actions">',
-                    '  <a href="' + productLink + '" class="sc-btn-primary">Xem sản phẩm</a>',
-                    '  <button class="sc-btn-secondary sc-ask-btn">Hỏi AI</button>',
-                    '</div>',
-                ].join('');
-
-                // Bind "Hỏi AI" safely via event listener
-                var aiQuery = 'Tư vấn lễ vật và nghi thức chuẩn bị cho ' + h.name;
-                card.querySelector('.sc-ask-btn').addEventListener('click', (function (q) {
-                    return function () {
-                        if (typeof window.openChatbotWithMessage === 'function') {
-                            window.openChatbotWithMessage(q);
-                            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                        } else {
-                            var panel = document.getElementById('chatbot-panel');
-                            var input = document.getElementById('cb-input');
-                            if (panel) {
-                                panel.classList.add('cb-open');
-                                if (input) { input.value = q; input.focus(); }
-                            }
-                        }
-                    };
-                })(aiQuery));
-
-                grid.appendChild(card);
-            });
-        }
-    })();
-    </script>
-
-
-    <!-- About Section -->
-
-                        lunarLabel: '01/06 Âm lịch',
-                        date: new Date(2026, 5, 15),
-                        description: 'Mồng Một đầu tháng 6 âm lịch, thắp hương cúng gia tiên, thổ công và thần tài cầu may mắn tài lộc.',
-                        products: ['Hương vòng bài', 'Đèn thờ', 'Tiền vàng mã'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật cúng Mùng Một tháng 6 âm lịch'
-                    },
-                    {
-                        name: 'Rằm tháng 6',
-                        lunarLabel: '15/06 Âm lịch',
-                        date: new Date(2026, 5, 30),
-                        description: 'Rằm giữa năm âm lịch, dịp thắp hương cúng gia tiên cầu bình an, sức khoẻ cho cả nhà.',
-                        products: ['Hương bài thơm', 'Nến thờ trắng', 'Vàng mã thổ công'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật cho Rằm tháng 6 âm lịch'
-                    },
-                    {
-                        name: 'Mùng Một tháng 7',
-                        lunarLabel: '01/07 Âm lịch',
-                        date: new Date(2026, 6, 14),
-                        description: 'Đầu tháng 7 âm lịch – mở đầu mùa Vu Lan báo hiếu. Nhiều gia đình bắt đầu sắm lễ vật cúng chúng sinh.',
-                        products: ['Hương trầm', 'Nến vàng', 'Giấy tiền vàng bạc'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật Mùng Một tháng 7 và mùa Vu Lan'
-                    },
-                    {
-                        name: 'Rằm tháng 7 – Lễ Vu Lan',
-                        lunarLabel: '15/07 Âm lịch',
-                        date: new Date(2026, 6, 29),
-                        description: 'Lễ Vu Lan báo hiếu – dịp cúng chúng sinh lớn nhất trong năm. Tháng Cô Hồn, cần chuẩn bị lễ vật đầy đủ và thành tâm.',
-                        products: ['Hương vòng trầm', 'Nến đỏ', 'Vàng mã cô hồn'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật và nghi thức Rằm tháng 7 – Lễ Vu Lan Tháng Cô Hồn'
-                    },
-                    {
-                        name: 'Rằm tháng 8 – Tết Trung Thu',
-                        lunarLabel: '15/08 Âm lịch',
-                        date: new Date(2026, 7, 27),
-                        description: 'Tết Trung Thu – Rằm tháng 8, dịp cúng trăng và sum vầy gia đình. Các gia đình thường sắm đèn lồng và lễ vật.',
-                        products: ['Hương bài thơm', 'Nến trang trí', 'Đèn lồng thờ'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật cho Tết Trung Thu Rằm tháng 8'
-                    },
-                    {
-                        name: 'Ông Công Ông Táo',
-                        lunarLabel: '23/12 Âm lịch',
-                        date: new Date(2027, 1, 10),
-                        description: 'Lễ tiễn Táo Quân về trời – 23 tháng Chạp âm lịch. Cúng cá chép, mũ Táo và lễ vật để Táo Quân báo cáo tốt với Ngọc Hoàng.',
-                        products: ['Hương thờ', 'Mũ Táo Quân giấy', 'Cá chép giấy vàng mã'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật cúng Ông Công Ông Táo 23 tháng Chạp'
-                    },
-                    {
-                        name: 'Tết Nguyên Đán',
-                        lunarLabel: '01/01 Âm lịch',
-                        date: new Date(2027, 0, 29),
-                        description: 'Tết Nguyên Đán – lễ lớn nhất năm, cúng giao thừa, cúng đầu năm mới và đón tài lộc vào nhà.',
-                        products: ['Hương bài đặc biệt', 'Nến tết đỏ', 'Vàng mã thần tài'],
-                        link: 'products.html',
-                        aiQuery: 'Tư vấn lễ vật cúng Tết Nguyên Đán giao thừa'
-                    },
-                ];
-
-                var today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                // Filter upcoming, sort, take 3
-                var upcoming = HOLIDAYS
-                    .filter(function (h) { return h.date >= today; })
-                    .sort(function (a, b) { return a.date - b.date; })
-                    .slice(0, 3);
-
+            (function () {
+                var API_BASE = 'https://hangmatuyetnhanbackend-production.up.railway.app/api';
                 var grid = document.getElementById('sc-grid');
 
-                if (upcoming.length === 0) {
-                    grid.innerHTML = '<p class="text-center text-gray-400 py-8 col-span-full">Không có ngày lễ sắp tới trong danh sách.</p>';
-                    return;
-                }
+                // ── Loading state ──────────────────────────────────────────────
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Đang tải lịch ngày lễ từ hệ thống...</div>';
 
-                function daysUntil(date) {
-                    return Math.ceil((date - today) / 86400000);
-                }
+                // ── Fetch from backend (holidays + AI enrichment) ──────────────
+                fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(function (data) { renderCalendar(data); })
+                    .catch(function (err) {
+                        console.warn('Smart Calendar fetch failed:', err);
+                        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
+                    });
 
-                function badgeClass(days) {
-                    if (days <= 7) return 'urgent';
-                    if (days <= 30) return 'soon';
-                    return 'later';
-                }
+                // ── Render calendar cards ──────────────────────────────────────
+                function renderCalendar(holidays) {
+                    var today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
-                function badgeLabel(days) {
-                    if (days === 0) return 'Hôm nay';
-                    if (days === 1) return 'Ngày mai';
-                    return days + ' ngày nữa';
-                }
+                    // Filter to upcoming only, sort by date, take 3
+                    var upcoming = (holidays || [])
+                        .filter(function (h) { return h.nextDate && new Date(h.nextDate) >= today; })
+                        .sort(function (a, b) { return new Date(a.nextDate) - new Date(b.nextDate); })
+                        .slice(0, 3);
 
-                grid.innerHTML = '';
-                upcoming.forEach(function (h) {
-                    var days = daysUntil(h.date);
+                    if (!upcoming.length) {
+                        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:#9b7553;font-size:14px;">Không có ngày lễ sắp tới trong danh sách.</div>';
+                        return;
+                    }
 
-                    // Product chips → clickable links to product search
-                    var chips = h.products.map(function (p) {
-                        var search = encodeURIComponent(p);
-                        return '<a href="products.html?search=' + search + '" class="sc-chip">' + p + '</a>';
-                    }).join('');
+                    grid.innerHTML = '';
+                    upcoming.forEach(function (h) {
+                        var days = Math.ceil((new Date(h.nextDate) - today) / 86400000);
+                        var badgeClass = days <= 7 ? 'urgent' : (days <= 30 ? 'soon' : 'later');
+                        var badgeLabel = days === 0 ? 'Hôm nay' : (days === 1 ? 'Ngày mai' : days + ' ngày nữa');
 
-                    var card = document.createElement('div');
-                    card.className = 'sc-card';
-                    card.innerHTML = [
-                        '<span class="sc-badge ' + badgeClass(days) + '">' + badgeLabel(days) + '</span>',
-                        '<div class="sc-lunar">' + h.lunarLabel + '</div>',
-                        '<div class="sc-name">' + h.name + '</div>',
-                        '<p class="sc-desc">' + h.description + '</p>',
-                        '<div class="sc-products-label">Sản phẩm gợi ý:</div>',
-                        '<div class="sc-product-chips">' + chips + '</div>',
-                        '<div class="sc-actions">',
-                        '  <a href="' + h.link + '" class="sc-btn-primary">Xem sản phẩm</a>',
-                        '  <button class="sc-btn-secondary sc-ask-btn">Hỏi AI</button>',
-                        '</div>',
-                    ].join('');
+                        // Product chips from actual DB products
+                        var chips = '';
+                        if (h.products && h.products.length) {
+                            chips = h.products.map(function (p) {
+                                return '<a href="products.html?search=' + encodeURIComponent(p.name) + '" class="sc-chip">' + p.name + '</a>';
+                            }).join('');
+                        } else {
+                            chips = '<span class="sc-chip" style="color:#9b9b9b;border-style:dashed;">Đang cập nhật...</span>';
+                        }
 
-                    // Bind "Hỏi AI" via event listener to avoid onclick quoting issues
-                    var askBtn = card.querySelector('.sc-ask-btn');
-                    askBtn.addEventListener('click', (function (query) {
-                        return function () {
-                            if (typeof window.openChatbotWithMessage === 'function') {
-                                window.openChatbotWithMessage(query);
-                                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                            } else {
-                                // Fallback: chatbot not yet loaded, open and wait
-                                var panel = document.getElementById('chatbot-panel');
-                                var input = document.getElementById('cb-input');
-                                if (panel) {
-                                    panel.classList.add('cb-open');
-                                    if (input) {
-                                        input.value = query;
-                                        input.focus();
+                        // "Xem sản phẩm" links to holiday filtered products page
+                        var productLink = 'products.html';
+
+                        var card = document.createElement('div');
+                        card.className = 'sc-card';
+                        card.innerHTML = [
+                            '<span class="sc-badge ' + badgeClass + '">' + badgeLabel + '</span>',
+                            '<div class="sc-lunar">' + (h.lunarLabel || '') + '</div>',
+                            '<div class="sc-name">' + h.name + '</div>',
+                            '<p class="sc-desc">' + (h.description || '') + '</p>',
+                            '<div class="sc-products-label">Sản phẩm gợi ý từ cửa hàng:</div>',
+                            '<div class="sc-product-chips">' + chips + '</div>',
+                            '<div class="sc-actions">',
+                            '  <a href="' + productLink + '" class="sc-btn-primary">Xem sản phẩm</a>',
+                            '  <button class="sc-btn-secondary sc-ask-btn">Hỏi AI</button>',
+                            '</div>',
+                        ].join('');
+
+                        // Bind "Hỏi AI" safely via event listener
+                        var aiQuery = 'Tư vấn lễ vật và nghi thức chuẩn bị cho ' + h.name;
+                        card.querySelector('.sc-ask-btn').addEventListener('click', (function (q) {
+                            return function () {
+                                if (typeof window.openChatbotWithMessage === 'function') {
+                                    window.openChatbotWithMessage(q);
+                                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                } else {
+                                    var panel = document.getElementById('chatbot-panel');
+                                    var input = document.getElementById('cb-input');
+                                    if (panel) {
+                                        panel.classList.add('cb-open');
+                                        if (input) { input.value = q; input.focus(); }
                                     }
                                 }
-                            }
-                        };
-                    })(h.aiQuery));
+                            };
+                        })(aiQuery));
 
-                    grid.appendChild(card);
-                });
-
-                // Cleanup old global handler (no longer needed)
-                window._scAskAI = null;
+                        grid.appendChild(card);
+                    });
+                }
             })();
-
     </script>
+
 
     <!-- About Section -->
 
