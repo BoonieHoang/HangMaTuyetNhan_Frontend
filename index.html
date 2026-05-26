@@ -635,6 +635,7 @@
                     box-shadow: 0 0 16px rgba(196, 154, 69, 0.35);
                     transform: scale(1.015);
                 }
+
                 100% {
                     border-color: #e8ddd0;
                     box-shadow: none;
@@ -684,19 +685,27 @@
                         <button id="sc-month-next" class="sc-month-nav">&rarr;</button>
                     </div>
                     <div class="sc-month-grid-weekdays">
-                        <div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div>T7</div><div>CN</div>
+                        <div>T2</div>
+                        <div>T3</div>
+                        <div>T4</div>
+                        <div>T5</div>
+                        <div>T6</div>
+                        <div>T7</div>
+                        <div>CN</div>
                     </div>
                     <div id="sc-month-days" class="sc-month-grid-days"></div>
                 </div>
 
                 <div class="sc-section-title">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px; height:16px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        style="width:16px; height:16px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span>Ngày Lễ Sắp Tới</span>
                 </div>
                 <div id="sc-holidays-list">
-                    <div style="text-align:center;padding:40px 0;color:#9b7553;font-size:13px;" id="sc-loading">Đang tải lịch ngày lễ...</div>
+                    <div style="text-align:center;font-size:13px;" id="sc-loading">Đang tải lịch ngày lễ...</div>
                 </div>
             </div>
         </div>
@@ -709,7 +718,7 @@
                 var closeBtn = document.getElementById('sc-close');
                 var panel = document.getElementById('sc-panel');
                 var holidaysList = document.getElementById('sc-holidays-list');
-                
+
                 var monthTitle = document.getElementById('sc-month-title');
                 var monthDays = document.getElementById('sc-month-days');
                 var prevBtn = document.getElementById('sc-month-prev');
@@ -813,7 +822,7 @@
                         if (holiday) {
                             cell.classList.add('sc-day-holiday');
                             cell.title = holiday.name + " (" + (holiday.lunarLabel || '') + ")";
-                            
+
                             cell.addEventListener('click', (function (hName, dStr) {
                                 return function (e) {
                                     e.stopPropagation();
