@@ -225,7 +225,225 @@
         </div>
     </section>
 
+    <!-- ═══ SMART CALENDAR ═══ -->
+    <section class="container mx-auto px-4 mb-20" id="smart-calendar">
+        <style>
+            .sc-card {
+                background: #fff;
+                border: 1px solid #e8ddd0;
+                border-radius: 14px;
+                padding: 22px;
+                position: relative;
+                overflow: hidden;
+                transition: box-shadow 0.25s, transform 0.25s;
+                display: flex;
+                flex-direction: column;
+            }
+            .sc-card:hover { box-shadow: 0 10px 32px rgba(111,42,42,0.12); transform: translateY(-3px); }
+            .sc-card::before {
+                content: '';
+                position: absolute; top: 0; left: 0; right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #6F2A2A, #c49a45);
+            }
+            .sc-badge {
+                display: inline-block;
+                font-size: 10.5px; font-weight: 700;
+                padding: 3px 10px; border-radius: 20px;
+                margin-bottom: 10px;
+            }
+            .sc-badge.urgent { background: #fee2e2; color: #991b1b; }
+            .sc-badge.soon   { background: #fef3c7; color: #92400e; }
+            .sc-badge.later  { background: #f0fdf4; color: #166534; }
+            .sc-lunar { font-size: 12px; color: #c49a45; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.03em; }
+            .sc-name  { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: #6F2A2A; margin-bottom: 8px; line-height: 1.3; }
+            .sc-desc  { font-size: 13px; color: #6b7280; line-height: 1.6; margin-bottom: 14px; flex: 1; }
+            .sc-products-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9b7553; margin-bottom: 8px; }
+            .sc-product-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+            .sc-chip { background: #fdf6ec; border: 1px solid #e8ddd0; color: #6F2A2A; font-size: 11.5px; padding: 4px 10px; border-radius: 20px; font-weight: 500; }
+            .sc-actions { display: flex; gap: 10px; margin-top: auto; }
+            .sc-btn-primary {
+                flex: 1; text-align: center; background: #6F2A2A; color: #fff;
+                font-size: 12px; font-weight: 700; padding: 9px 12px;
+                border-radius: 8px; text-decoration: none; border: none; cursor: pointer;
+                transition: background 0.2s; letter-spacing: 0.02em;
+            }
+            .sc-btn-primary:hover { background: #8B1A1A; }
+            .sc-btn-secondary {
+                flex: 1; text-align: center; background: transparent; color: #c49a45;
+                font-size: 12px; font-weight: 700; padding: 9px 12px;
+                border-radius: 8px; border: 1.5px solid #c49a45; cursor: pointer;
+                transition: background 0.2s, color 0.2s; letter-spacing: 0.02em;
+            }
+            .sc-btn-secondary:hover { background: #c49a45; color: #fff; }
+            #sc-grid { display: grid; gap: 20px; }
+            @media (min-width: 768px) { #sc-grid { grid-template-columns: repeat(3, 1fr); } }
+            @media (max-width: 767px) { #sc-grid { grid-template-columns: 1fr; } }
+        </style>
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <p class="text-xs font-bold tracking-[0.25em] text-accent uppercase mb-2">Lịch Tâm Linh</p>
+            <h2 class="text-2xl md:text-3xl font-sans font-bold text-primary inline-block relative pb-3">
+                Smart Calendar
+                <div class="absolute bottom-0 left-[20%] right-[20%] h-0.5 bg-accent"></div>
+            </h2>
+            <p class="text-sm text-gray-500 mt-3">Các ngày lễ âm lịch sắp tới và gợi ý lễ vật phù hợp</p>
+        </div>
+
+        <!-- Cards container -->
+        <div id="sc-grid">
+            <div class="text-center py-10 text-gray-400 text-sm col-span-full" id="sc-loading">Đang tải lịch...</div>
+        </div>
+    </section>
+
+    <script>
+    (function () {
+        // ── Hardcoded holiday data (lunar month/day + fixed Gregorian dates 2026-2027) ──
+        var HOLIDAYS = [
+            {
+                name: 'Rằm tháng 5',
+                lunarLabel: '15/05 Âm lịch',
+                date: new Date(2026, 4, 31),
+                description: 'Ngày Rằm tháng 5 âm lịch, cúng gia tiên và thổ địa cầu bình an. Đây cũng là dịp nhiều gia đình sắm lễ vật thắp hương.',
+                products: ['Hương thờ trầm', 'Nến đỏ thờ cúng', 'Vàng mã gia tiên'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật và nghi thức cho Rằm tháng 5 âm lịch'
+            },
+            {
+                name: 'Mùng Một tháng 6',
+                lunarLabel: '01/06 Âm lịch',
+                date: new Date(2026, 5, 15),
+                description: 'Mồng Một đầu tháng 6 âm lịch, thắp hương cúng gia tiên, thổ công và thần tài cầu may mắn tài lộc.',
+                products: ['Hương vòng bài', 'Đèn thờ', 'Tiền vàng mã'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật cúng Mùng Một tháng 6 âm lịch'
+            },
+            {
+                name: 'Rằm tháng 6',
+                lunarLabel: '15/06 Âm lịch',
+                date: new Date(2026, 5, 30),
+                description: 'Rằm giữa năm âm lịch, dịp thắp hương cúng gia tiên cầu bình an, sức khoẻ cho cả nhà.',
+                products: ['Hương bài thơm', 'Nến thờ trắng', 'Vàng mã thổ công'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật cho Rằm tháng 6 âm lịch'
+            },
+            {
+                name: 'Mùng Một tháng 7',
+                lunarLabel: '01/07 Âm lịch',
+                date: new Date(2026, 6, 14),
+                description: 'Đầu tháng 7 âm lịch – mở đầu mùa Vu Lan báo hiếu. Nhiều gia đình bắt đầu sắm lễ vật cúng chúng sinh.',
+                products: ['Hương trầm', 'Nến vàng', 'Giấy tiền vàng bạc'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật Mùng Một tháng 7 và mùa Vu Lan'
+            },
+            {
+                name: 'Rằm tháng 7 – Lễ Vu Lan',
+                lunarLabel: '15/07 Âm lịch',
+                date: new Date(2026, 6, 29),
+                description: 'Lễ Vu Lan báo hiếu – dịp cúng chúng sinh lớn nhất trong năm. Tháng Cô Hồn, cần chuẩn bị lễ vật đầy đủ và thành tâm.',
+                products: ['Hương vòng trầm', 'Nến đỏ', 'Vàng mã cô hồn'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật và nghi thức Rằm tháng 7 – Lễ Vu Lan Tháng Cô Hồn'
+            },
+            {
+                name: 'Rằm tháng 8 – Tết Trung Thu',
+                lunarLabel: '15/08 Âm lịch',
+                date: new Date(2026, 7, 27),
+                description: 'Tết Trung Thu – Rằm tháng 8, dịp cúng trăng và sum vầy gia đình. Các gia đình thường sắm đèn lồng và lễ vật.',
+                products: ['Hương bài thơm', 'Nến trang trí', 'Đèn lồng thờ'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật cho Tết Trung Thu Rằm tháng 8'
+            },
+            {
+                name: 'Ông Công Ông Táo',
+                lunarLabel: '23/12 Âm lịch',
+                date: new Date(2027, 1, 10),
+                description: 'Lễ tiễn Táo Quân về trời – 23 tháng Chạp âm lịch. Cúng cá chép, mũ Táo và lễ vật để Táo Quân báo cáo tốt với Ngọc Hoàng.',
+                products: ['Hương thờ', 'Mũ Táo Quân giấy', 'Cá chép giấy vàng mã'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật cúng Ông Công Ông Táo 23 tháng Chạp'
+            },
+            {
+                name: 'Tết Nguyên Đán',
+                lunarLabel: '01/01 Âm lịch',
+                date: new Date(2027, 0, 29),
+                description: 'Tết Nguyên Đán – lễ lớn nhất năm, cúng giao thừa, cúng đầu năm mới và đón tài lộc vào nhà.',
+                products: ['Hương bài đặc biệt', 'Nến tết đỏ', 'Vàng mã thần tài'],
+                link: 'products.html',
+                aiQuery: 'Tư vấn lễ vật cúng Tết Nguyên Đán giao thừa'
+            },
+        ];
+
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Filter upcoming, sort, take 3
+        var upcoming = HOLIDAYS
+            .filter(function (h) { return h.date >= today; })
+            .sort(function (a, b) { return a.date - b.date; })
+            .slice(0, 3);
+
+        var grid = document.getElementById('sc-grid');
+
+        if (upcoming.length === 0) {
+            grid.innerHTML = '<p class="text-center text-gray-400 py-8 col-span-full">Không có ngày lễ sắp tới trong danh sách.</p>';
+            return;
+        }
+
+        function daysUntil(date) {
+            return Math.ceil((date - today) / 86400000);
+        }
+
+        function badgeClass(days) {
+            if (days <= 7)  return 'urgent';
+            if (days <= 30) return 'soon';
+            return 'later';
+        }
+
+        function badgeLabel(days) {
+            if (days === 0) return 'Hôm nay';
+            if (days === 1) return 'Ngày mai';
+            return days + ' ngày nữa';
+        }
+
+        grid.innerHTML = '';
+        upcoming.forEach(function (h) {
+            var days  = daysUntil(h.date);
+            var chips = h.products.map(function (p) {
+                return '<span class="sc-chip">' + p + '</span>';
+            }).join('');
+
+            var card = document.createElement('div');
+            card.className = 'sc-card';
+            card.innerHTML = [
+                '<span class="sc-badge ' + badgeClass(days) + '">' + badgeLabel(days) + '</span>',
+                '<div class="sc-lunar">' + h.lunarLabel + '</div>',
+                '<div class="sc-name">' + h.name + '</div>',
+                '<p class="sc-desc">' + h.description + '</p>',
+                '<div class="sc-products-label">Sản phẩm gợi ý:</div>',
+                '<div class="sc-product-chips">' + chips + '</div>',
+                '<div class="sc-actions">',
+                '  <a href="' + h.link + '" class="sc-btn-primary">Xem sản phẩm</a>',
+                '  <button class="sc-btn-secondary" onclick="window._scAskAI(' + JSON.stringify(h.aiQuery) + ')">Hỏi AI</button>',
+                '</div>',
+            ].join('');
+            grid.appendChild(card);
+        });
+
+        // Hỏi AI handler
+        window._scAskAI = function (query) {
+            if (typeof window.openChatbotWithMessage === 'function') {
+                window.openChatbotWithMessage(query);
+                // Scroll to bottom so chatbot is visible
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        };
+    })();
+    </script>
+
     <!-- About Section -->
+
     <section class="container mx-auto px-4 mb-20">
         <div class="flex flex-col lg:flex-row bg-white overflow-hidden shadow-md">
             <div class="lg:w-1/2 relative h-[350px] lg:h-[600px]">

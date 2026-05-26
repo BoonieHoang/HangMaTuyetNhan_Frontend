@@ -306,7 +306,7 @@
             <!-- Header -->
             <div id="cb-header">
                 <div id="cb-header-top">
-                    <span id="cb-title">Trợ lý Smart Calendar</span>
+                    <span id="cb-title">Trợ lý tư vấn</span>
                     <div id="cb-header-actions">
                         <button class="cb-icon-btn" id="cb-expand" aria-label="Mở rộng khung chat" title="Mở rộng">
                             <svg id="cb-expand-icon" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -354,7 +354,7 @@
     // ── Toggle button (outside container for fixed positioning) ────────
     const toggleBtn = document.createElement('button');
     toggleBtn.id = 'cb-toggle';
-    toggleBtn.setAttribute('aria-label', 'Mở trợ lý Smart Calendar');
+    toggleBtn.setAttribute('aria-label', 'Mở trợ lý tư vấn');
     toggleBtn.innerHTML = `
         <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -542,6 +542,7 @@
         return wrap;
     }
 
+
     // ── Helpers ────────────────────────────────────────────────────────
     function escapeHtml(str) {
         return String(str)
@@ -549,4 +550,13 @@
             .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    // ── Global: Smart Calendar integration ────────────────────────────
+    window.openChatbotWithMessage = function (msg) {
+        isOpen = true;
+        panel.classList.add('cb-open');
+        chipsEl.style.display = 'none';
+        setTimeout(() => sendMessage(msg), 200);
+    };
+
 })();
+
