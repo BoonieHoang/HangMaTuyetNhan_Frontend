@@ -260,11 +260,12 @@
             #sc-panel {
                 display: flex;
                 flex-direction: column;
-                position: absolute;
-                bottom: 72px;
-                right: 0;
+                position: fixed;
+                bottom: 160px;
+                right: 24px;
                 width: 420px;
-                height: 640px;
+                height: 580px;
+                max-height: calc(100vh - 185px);
                 background: #fff;
                 border-radius: 14px;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
@@ -285,9 +286,10 @@
 
             @media (max-width: 460px) {
                 #sc-panel {
-                    width: calc(100vw - 24px);
-                    right: -12px;
-                    height: min(600px, 85vh);
+                    width: calc(100vw - 48px);
+                    right: 24px;
+                    bottom: 160px;
+                    max-height: calc(100vh - 185px);
                 }
             }
 
