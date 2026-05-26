@@ -264,8 +264,8 @@
                 bottom: 160px;
                 right: 24px;
                 width: 420px;
-                height: 580px;
-                max-height: calc(100vh - 185px);
+                height: 600px;
+                max-height: calc(100vh - 120px);
                 background: #fff;
                 border-radius: 14px;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
@@ -289,7 +289,7 @@
                     width: calc(100vw - 48px);
                     right: 24px;
                     bottom: 160px;
-                    max-height: calc(100vh - 185px);
+                    max-height: calc(100vh - 120px);
                 }
             }
 
@@ -332,31 +332,27 @@
             /* Body */
             #sc-body {
                 flex: 1;
-                display: flex;
-                flex-direction: column;
+                overflow-y: auto;
                 padding: 16px;
                 background: #faf8f5;
-                gap: 16px;
-                overflow: hidden;
-            }
-
-            /* Scrollable list */
-            #sc-holidays-list {
-                flex: 1;
-                overflow-y: auto;
                 display: flex;
                 flex-direction: column;
-                gap: 14px;
-                padding-right: 4px;
+                gap: 16px;
             }
 
-            #sc-holidays-list::-webkit-scrollbar {
+            #sc-body::-webkit-scrollbar {
                 width: 4px;
             }
 
-            #sc-holidays-list::-webkit-scrollbar-thumb {
+            #sc-body::-webkit-scrollbar-thumb {
                 background: #d4b896;
                 border-radius: 4px;
+            }
+
+            #sc-holidays-list {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
             }
 
             /* Monthly Calendar Box styles */
