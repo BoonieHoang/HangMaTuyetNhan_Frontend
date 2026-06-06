@@ -199,15 +199,14 @@
                             <!-- PayOS Payment Button Block -->
                             <div id="p-payos-block" class="hidden mt-4 pt-4 border-t border-gray-200 text-center">
                                 <p class="text-xs font-bold text-blue-700 mb-3">THANH TOÁN QUA PAYOS</p>
-                                <a id="p-payos-btn" href="#" target="_blank"
+                                <button id="p-payos-btn" onclick="renewAndPay(currentOrderCode, this)"
                                     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-lg shadow transition text-sm">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                     </svg>
                                     Thanh toán ngay
-                                </a>
+                                </button>
                                 <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
-                                    Nhấp vào để chuyển đến cổng thanh toán PayOS, quét mã QR để hoàn tất.<br>
                                     Hệ thống tự cập nhật trạng thái ngay khi nhận được tiền.
                                 </p>
                             </div>
@@ -309,6 +308,8 @@
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/chatbot.js"></script>
     <script>
+        let currentOrderCode = null;
+
         document.addEventListener('DOMContentLoaded', async () => {
             Auth.requireLogin();
             setupAuthMenu();
@@ -320,6 +321,7 @@
             try {
                 const res = await ApiClient.get(`/orders/${code}`);
                 renderOrder(res.data);
+                currentOrderCode = res.data.order_code;
                 updateCartCount();
             } catch (err) {
                 document.getElementById('loading').innerText = 'Lỗi hoặc không tìm thấy đơn hàng.';
@@ -401,9 +403,8 @@
                 if (payment.status === 'pending') {
                     pStatus.innerText = 'Chờ thanh toán';
                     pStatus.className = 'font-bold text-yellow-600';
-                    if (order.payment_method === 'bank_transfer' && payment.payos_checkout_url && order.status !== 'cancelled') {
+                    if (order.payment_method === 'bank_transfer' && order.status !== 'cancelled') {
                         document.getElementById('p-payos-block').classList.remove('hidden');
-                        document.getElementById('p-payos-btn').href = payment.payos_checkout_url;
                     }
                 } else if (payment.status === 'paid') {
                     pStatus.innerText = 'Đã thanh toán ✓';
@@ -516,6 +517,24 @@
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Xác nhận hủy';
+            }
+        }
+        async function renewAndPay(orderCode, btn) {
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Đang tạo link...`;
+            try {
+                const res = await ApiClient.post(`/orders/${orderCode}/renew-payment`, {});
+                if (res.payos_checkout_url) {
+                    window.open(res.payos_checkout_url, '_blank');
+                } else {
+                    alert('Không thể tạo link thanh toán. Vui lòng thử lại.');
+                }
+            } catch (err) {
+                alert(err.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = original;
             }
         }
     </script>
