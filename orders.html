@@ -10,7 +10,8 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <script>
-        tailwind.config = { theme: {
+        tailwind.config = {
+            theme: {
                 container: {
                     center: true,
                     screens: {
@@ -21,7 +22,9 @@
                         '2xl': '1240px',
                     },
                 },
-                extend: { colors: { primary: '#6F2A2A', accent: '#c49a45', bgtheme: '#FFF3D9', } } } }
+                extend: { colors: { primary: '#6F2A2A', accent: '#c49a45', bgtheme: '#FFF3D9', } }
+            }
+        }
     </script>
     <style>
         body {
@@ -99,7 +102,7 @@
                         </svg> Danh mục
                     </div>
                     <!-- Dropdown -->
-                    <div id="category-dropdown" 
+                    <div id="category-dropdown"
                         class="absolute left-0 mt-3 w-64 bg-white text-gray-800 shadow-xl border border-gray-100 rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50">
                         <ul id="category-list" class="py-2 max-h-[400px] overflow-y-auto">
                             <!-- JS Injected -->
@@ -212,7 +215,7 @@
                         <li><a href="index.html" class="hover:text-primary transition">Trang chủ</a></li>
                         <li><a href="rituals.html" class="hover:text-primary transition">Nghi lễ văn khấn</a></li>
                         <li><a href="about.html" class="hover:text-primary transition">Về chúng tôi</a></li>
-                                                <li><a href="products.html" class="hover:text-primary transition">Sản phẩm</a></li>
+                        <li><a href="products.html" class="hover:text-primary transition">Sản phẩm</a></li>
                     </ul>
                 </div>
 
@@ -322,6 +325,18 @@
                     if (order.status === 'delivered') statusColor = 'bg-green-100 text-green-800';
                     if (order.status === 'cancelled') statusColor = 'bg-red-100 text-red-800';
 
+                    const payBtn = (
+                        order.payment_method === 'bank_transfer' &&
+                        order.payment &&
+                        order.payment.status === 'pending' &&
+                        order.payment.payos_checkout_url &&
+                        order.status === 'pending'
+                    ) ? `<a href="${order.payment.payos_checkout_url}" target="_blank"
+                            class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition shadow">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            Thanh toán ngay
+                         </a>` : '';
+
                     list.innerHTML += `
                         <div class="border rounded-lg p-4 hover:shadow transition">
                             <div class="flex justify-between items-center mb-3 border-b pb-2">
@@ -333,7 +348,7 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <p class="text-sm">Thanh toán: <strong>${order.payment_method === 'cod' ? 'COD' : 'Chuyển khoản'}</strong></p>
+                                    <p class="text-sm">Thanh toán: <strong>${order.payment_method === 'cod' ? 'COD' : 'Chuyển khoản (PayOS)'}</strong></p>
                                     <p class="text-sm">Tổng tiền: <strong class="text-primary">${Number(order.total_amount).toLocaleString('vi-VN')} đ</strong></p>
                                 </div>
                                 <a href="order-detail.html?code=${order.order_code}" class="text-accent hover:text-[#b8952b] font-medium text-sm underline">Xem Chi Tiết</a>
