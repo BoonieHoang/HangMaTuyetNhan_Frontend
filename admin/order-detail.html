@@ -330,8 +330,8 @@
                 await ApiClient.patch(`/admin/orders/${orderId}/status`, { status: newStatus, cancelled_reason });
                 showNotification('Cập nhật trạng thái thành công!', 'success');
                 loadOrder();
-            } catch (err) { 
-                showNotification(err.message || 'Lỗi cập nhật trạng thái', 'error'); 
+            } catch (err) {
+                showNotification(err.message || 'Lỗi cập nhật trạng thái', 'error');
                 document.getElementById('status-update').value = currentOrder.status;
             }
         }
