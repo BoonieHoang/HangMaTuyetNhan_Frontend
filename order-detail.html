@@ -214,37 +214,6 @@
                                     Hệ thống tự cập nhật trạng thái ngay khi nhận được tiền.
                                 </p>
                             </div>
-                            <!-- Refund Status Block -->
-                            <div id="p-refund-block" class="hidden mt-4 pt-4 border-t border-gray-200">
-                                <div id="p-refund-pending"
-                                    class="hidden flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                    <svg class="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <div>
-                                        <p class="text-sm font-bold text-orange-700">Đang chờ hoàn tiền</p>
-                                        <p class="text-xs text-orange-600 mt-1">Yêu cầu hoàn tiền của bạn đã được ghi
-                                            nhận. Admin sẽ xử lý và chuyển khoản lại cho bạn trong thời gian sớm nhất.
-                                        </p>
-                                        <p class="text-xs text-orange-500 mt-1 italic" id="p-refund-reason"></p>
-                                    </div>
-                                </div>
-                                <div id="p-refund-done"
-                                    class="hidden flex items-start gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
-                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <div>
-                                        <p class="text-sm font-bold text-green-700">Đã hoàn tiền thành công ✓</p>
-                                        <p class="text-xs text-green-600 mt-1" id="p-refund-note"></p>
-                                        <p class="text-xs text-gray-400 mt-1" id="p-refunded-at"></p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -291,20 +260,6 @@
                 </svg>
             </button>
             <h3 class="text-lg font-bold text-primary mb-4">Hủy Đơn Hàng</h3>
-            <!-- Cảnh báo khi đơn đã thanh toán -->
-            <div id="cancel-paid-warning"
-                class="hidden mb-4 flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-lg p-3">
-                <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <div>
-                    <p class="text-sm font-bold text-amber-700">Đơn hàng này đã được thanh toán</p>
-                    <p class="text-xs text-amber-600 mt-1">Nếu hủy, hệ thống sẽ tự động tạo yêu cầu hoàn tiền. Admin sẽ
-                        xử lý và chuyển khoản lại cho bạn trong thời gian sớm nhất.</p>
-                </div>
-            </div>
             <p class="text-sm text-gray-600 mb-4">Vui lòng cho biết lý do bạn muốn hủy đơn hàng này:</p>
             <textarea id="cancel-reason" rows="3"
                 class="w-full border border-gray-300 rounded focus:outline-none focus:border-primary p-2 mb-4 text-sm"
@@ -314,8 +269,7 @@
                 <button type="button" onclick="closeCancelModal()"
                     class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 text-sm font-medium">Đóng</button>
                 <button type="button" onclick="submitCancelOrder()" id="btn-submit-cancel"
-                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium transition">Xác
-                    nhận hủy</button>
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium transition">Xác nhận hủy</button>
             </div>
         </div>
     </div>
@@ -434,7 +388,8 @@
             statusEl.className = `px-4 py-1.5 rounded-full text-sm font-bold ${s.cls}`;
 
             const cancelBtn = document.getElementById('btn-cancel-order');
-            if (order.status === 'pending') {
+            const isPaid = order.payment && order.payment.status === 'paid';
+            if (order.status === 'pending' && !isPaid) {
                 cancelBtn.classList.remove('hidden');
                 cancelBtn.dataset.code = order.order_code;
             } else {
@@ -460,26 +415,7 @@
             const pStatus = document.getElementById('p-status');
             const payment = order.payment;
             if (payment) {
-                if (payment.status === 'refund_pending') {
-                    pStatus.innerText = 'Đang chờ hoàn tiền';
-                    pStatus.className = 'font-bold text-orange-500';
-                    document.getElementById('p-refund-block').classList.remove('hidden');
-                    document.getElementById('p-refund-pending').classList.remove('hidden');
-                    if (payment.refund_reason) {
-                        document.getElementById('p-refund-reason').innerText = 'Lý do: ' + payment.refund_reason;
-                    }
-                } else if (payment.status === 'refunded') {
-                    pStatus.innerText = 'Đã hoàn tiền ✓';
-                    pStatus.className = 'font-bold text-green-600';
-                    document.getElementById('p-refund-block').classList.remove('hidden');
-                    document.getElementById('p-refund-done').classList.remove('hidden');
-                    if (payment.refund_note) {
-                        document.getElementById('p-refund-note').innerText = payment.refund_note;
-                    }
-                    if (payment.refunded_at) {
-                        document.getElementById('p-refunded-at').innerText = 'Thời gian hoàn tiền: ' + new Date(payment.refunded_at).toLocaleString('vi-VN');
-                    }
-                } else if (payment.status === 'pending') {
+                if (payment.status === 'pending') {
                     pStatus.innerText = 'Chờ thanh toán';
                     pStatus.className = 'font-bold text-yellow-600';
                     if (order.payment_method === 'bank_transfer' && order.status !== 'cancelled') {
@@ -553,16 +489,8 @@
         }
 
         function openCancelModal() {
-            const payment = window._currentOrder && window._currentOrder.payment;
             document.getElementById('cancel-reason').value = '';
             document.getElementById('cancel-error').classList.add('hidden');
-            // Hiện cảnh báo nếu đơn đã thanh toán
-            const warningEl = document.getElementById('cancel-paid-warning');
-            if (payment && payment.status === 'paid') {
-                warningEl.classList.remove('hidden');
-            } else {
-                warningEl.classList.add('hidden');
-            }
             document.getElementById('cancel-modal').classList.remove('hidden');
         }
 
@@ -589,19 +517,10 @@
             try {
                 const res = await ApiClient.patch(`/orders/${code}/cancel`, { cancelled_reason: reason });
                 closeCancelModal();
-                if (res.refund_requested) {
-                    // Hiện thông báo đặc biệt khi có yêu cầu hoàn tiền
-                    if (typeof showNotification === 'function') {
-                        showNotification('Đã hủy đơn. Yêu cầu hoàn tiền đã được ghi nhận!', 'success');
-                    } else {
-                        alert(res.message);
-                    }
+                if (typeof showNotification === 'function') {
+                    showNotification(res.message || 'Đã hủy đơn hàng thành công.', 'success');
                 } else {
-                    if (typeof showNotification === 'function') {
-                        showNotification(res.message || 'Đã hủy đơn hàng thành công.', 'success');
-                    } else {
-                        alert(res.message || 'Đã hủy đơn hàng thành công.');
-                    }
+                    alert(res.message || 'Đã hủy đơn hàng thành công.');
                 }
                 setTimeout(() => {
                     window.location.reload();
