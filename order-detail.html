@@ -52,7 +52,8 @@
                 <div class="relative w-full">
                     <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm"
                         class="w-full border border-gray-200 rounded-lg py-2.5 px-5 pr-12 focus:outline-none focus:border-accent bg-white shadow-sm">
-                    <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary" onclick="performGlobalSearch()">
+                    <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
+                        onclick="performGlobalSearch()">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607" />
@@ -124,7 +125,9 @@
                 <h1 class="text-3xl font-bold text-primary">Chi Tiết Đơn Hàng</h1>
                 <div class="flex items-center gap-3">
                     <span id="o-status" class="px-4 py-1.5 rounded-full font-bold"></span>
-                    <button id="btn-cancel-order" onclick="openCancelModal()" class="hidden px-4 py-1.5 bg-red-100 text-red-700 rounded-full font-bold text-sm hover:bg-red-200 transition">Hủy đơn</button>
+                    <button id="btn-cancel-order" onclick="openCancelModal()"
+                        class="hidden px-4 py-1.5 bg-red-100 text-red-700 rounded-full font-bold text-sm hover:bg-red-200 transition">Hủy
+                        đơn</button>
                 </div>
             </div>
             <!-- Back button -->
@@ -202,7 +205,8 @@
                                 <button id="p-payos-btn" onclick="renewAndPay(currentOrderCode, this)"
                                     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-lg shadow transition text-sm">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                     </svg>
                                     Thanh toán ngay
                                 </button>
@@ -212,16 +216,28 @@
                             </div>
                             <!-- Refund Status Block -->
                             <div id="p-refund-block" class="hidden mt-4 pt-4 border-t border-gray-200">
-                                <div id="p-refund-pending" class="hidden flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                    <svg class="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div id="p-refund-pending"
+                                    class="hidden flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                    <svg class="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                     <div>
                                         <p class="text-sm font-bold text-orange-700">Đang chờ hoàn tiền</p>
-                                        <p class="text-xs text-orange-600 mt-1">Yêu cầu hoàn tiền của bạn đã được ghi nhận. Admin sẽ xử lý và chuyển khoản lại cho bạn trong thời gian sớm nhất.</p>
+                                        <p class="text-xs text-orange-600 mt-1">Yêu cầu hoàn tiền của bạn đã được ghi
+                                            nhận. Admin sẽ xử lý và chuyển khoản lại cho bạn trong thời gian sớm nhất.
+                                        </p>
                                         <p class="text-xs text-orange-500 mt-1 italic" id="p-refund-reason"></p>
                                     </div>
                                 </div>
-                                <div id="p-refund-done" class="hidden flex items-start gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
-                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div id="p-refund-done"
+                                    class="hidden flex items-start gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                     <div>
                                         <p class="text-sm font-bold text-green-700">Đã hoàn tiền thành công ✓</p>
                                         <p class="text-xs text-green-600 mt-1" id="p-refund-note"></p>
@@ -267,24 +283,39 @@
     <!-- Modal Cancel Order -->
     <div id="cancel-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <div class="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">
-            <button type="button" onclick="closeCancelModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button type="button" onclick="closeCancelModal()"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
             </button>
             <h3 class="text-lg font-bold text-primary mb-4">Hủy Đơn Hàng</h3>
             <!-- Cảnh báo khi đơn đã thanh toán -->
-            <div id="cancel-paid-warning" class="hidden mb-4 flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-lg p-3">
-                <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <div id="cancel-paid-warning"
+                class="hidden mb-4 flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-lg p-3">
+                <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
                 <div>
                     <p class="text-sm font-bold text-amber-700">Đơn hàng này đã được thanh toán</p>
-                    <p class="text-xs text-amber-600 mt-1">Nếu hủy, hệ thống sẽ tự động tạo yêu cầu hoàn tiền. Admin sẽ xử lý và chuyển khoản lại cho bạn trong thời gian sớm nhất.</p>
+                    <p class="text-xs text-amber-600 mt-1">Nếu hủy, hệ thống sẽ tự động tạo yêu cầu hoàn tiền. Admin sẽ
+                        xử lý và chuyển khoản lại cho bạn trong thời gian sớm nhất.</p>
                 </div>
             </div>
             <p class="text-sm text-gray-600 mb-4">Vui lòng cho biết lý do bạn muốn hủy đơn hàng này:</p>
-            <textarea id="cancel-reason" rows="3" class="w-full border border-gray-300 rounded focus:outline-none focus:border-primary p-2 mb-4 text-sm" placeholder="Ví dụ: Đổi ý không mua nữa, Muốn thay đổi sản phẩm..."></textarea>
+            <textarea id="cancel-reason" rows="3"
+                class="w-full border border-gray-300 rounded focus:outline-none focus:border-primary p-2 mb-4 text-sm"
+                placeholder="Ví dụ: Đổi ý không mua nữa, Muốn thay đổi sản phẩm..."></textarea>
             <div id="cancel-error" class="hidden text-red-600 text-sm mb-4"></div>
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeCancelModal()" class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 text-sm font-medium">Đóng</button>
-                <button type="button" onclick="submitCancelOrder()" id="btn-submit-cancel" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium transition">Xác nhận hủy</button>
+                <button type="button" onclick="closeCancelModal()"
+                    class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 text-sm font-medium">Đóng</button>
+                <button type="button" onclick="submitCancelOrder()" id="btn-submit-cancel"
+                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium transition">Xác
+                    nhận hủy</button>
             </div>
         </div>
     </div>
@@ -314,7 +345,7 @@
                         <li><a href="index.html" class="hover:text-primary transition">Trang chủ</a></li>
                         <li><a href="rituals.html" class="hover:text-primary transition">Nghi lễ văn khấn</a></li>
                         <li><a href="about.html" class="hover:text-primary transition">Về chúng tôi</a></li>
-                                                <li><a href="products.html" class="hover:text-primary transition">Sản phẩm</a></li>
+                        <li><a href="products.html" class="hover:text-primary transition">Sản phẩm</a></li>
                     </ul>
                 </div>
                 <div>

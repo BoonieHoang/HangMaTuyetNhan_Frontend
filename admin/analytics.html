@@ -50,7 +50,8 @@
                 <i data-lucide="layers" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý danh mục</span>
             </a>
-            <a href="rituals.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="rituals.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="book-open" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý nghi lễ</span>
             </a>
@@ -201,7 +202,7 @@
             try {
                 const res = await ApiClient.get('/admin/dashboard/stats');
                 const counts = res.order_status_breakdown || {};
-                
+
                 const p = counts['pending'] || 0;
                 const c = counts['confirmed'] || 0;
                 const s = counts['shipping'] || 0;
