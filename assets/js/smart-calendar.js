@@ -497,21 +497,48 @@
         updateCalendarView();
     });
 
-    // ── Fetch from backend ─────────────────────────────────────────────
-    fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
-        .then(function (r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
-        })
-        .then(function (data) {
-            fetchedHolidays = data || [];
+    // ── Fetch from backend with LocalStorage Cache ─────────────────────
+    var CACHE_KEY = 'sc_holidays_cache';
+    var CACHE_TIME_KEY = 'sc_holidays_cache_time';
+    var CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
+    function fetchHolidays() {
+        fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
+            .then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(function (data) {
+                fetchedHolidays = data || [];
+                try {
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedHolidays));
+                    localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+                } catch (e) {
+                    console.warn('Failed to save calendar cache:', e);
+                }
+                renderHolidayCards(fetchedHolidays);
+                updateCalendarView();
+            })
+            .catch(function (err) {
+                console.warn('Smart Calendar fetch failed:', err);
+                holidaysList.innerHTML = '<div style="text-align:center;padding:20px 0;color:#9b7553;font-size:13px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
+            });
+    }
+
+    try {
+        var cachedData = localStorage.getItem(CACHE_KEY);
+        var cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+
+        if (cachedData && cachedTime && (Date.now() - parseInt(cachedTime, 10) < CACHE_DURATION)) {
+            fetchedHolidays = JSON.parse(cachedData) || [];
             renderHolidayCards(fetchedHolidays);
             updateCalendarView();
-        })
-        .catch(function (err) {
-            console.warn('Smart Calendar fetch failed:', err);
-            holidaysList.innerHTML = '<div style="text-align:center;padding:20px 0;color:#9b7553;font-size:13px;">Không thể tải lịch ngày lễ. Vui lòng thử lại sau.</div>';
-        });
+        } else {
+            fetchHolidays();
+        }
+    } catch (e) {
+        fetchHolidays();
+    }
 
     // ── Update Calendar View ───────────────────────────────────────────
     function updateCalendarView() {
