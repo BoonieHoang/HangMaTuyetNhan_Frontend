@@ -14,11 +14,30 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f3ee; }
-        .modal-backdrop { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-        .badge-active   { background: #dcfce7; color: #166534; }
-        .badge-inactive { background: #fee2e2; color: #991b1b; }
-        .badge-points   { background: #fef3c7; color: #92400e; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f3ee;
+        }
+
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-points {
+            background: #fef3c7;
+            color: #92400e;
+        }
     </style>
 </head>
 
@@ -31,27 +50,33 @@
             </h1>
         </div>
         <nav class="flex-1">
-            <a href="dashboard.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="dashboard.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="layout-dashboard" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Trang quản trị</span>
             </a>
-            <a href="orders.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="orders.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="shopping-bag" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý đơn hàng</span>
             </a>
-            <a href="products.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="products.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="package" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý sản phẩm</span>
             </a>
-            <a href="categories.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="categories.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="layers" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý danh mục</span>
             </a>
-            <a href="rituals.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="rituals.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="book-open" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý nghi lễ</span>
             </a>
-            <a href="users.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="users.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="users" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Quản lý tài khoản</span>
             </a>
@@ -59,17 +84,20 @@
                 <i data-lucide="ticket-percent" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Mã giảm giá</span>
             </a>
-            <a href="analytics.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="analytics.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="bar-chart-3" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Thống kê</span>
             </a>
-            <a href="system-config.html" class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
+            <a href="system-config.html"
+                class="flex items-center px-6 py-4 transition-colors hover:bg-bgtheme hover:text-primary">
                 <i data-lucide="settings" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Cài đặt</span>
             </a>
         </nav>
         <div class="p-6">
-            <button onclick="Auth.logout()" class="flex items-center w-full px-6 py-4 transition-colors hover:text-gray-500 text-white">
+            <button onclick="Auth.logout()"
+                class="flex items-center w-full px-6 py-4 transition-colors hover:text-gray-500 text-white">
                 <i data-lucide="log-out" class="w-6 h-6 mr-4"></i>
                 <span class="font-medium uppercase">Đăng xuất</span>
             </button>
@@ -80,41 +108,27 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Mã Giảm Giá</h1>
-                <p class="text-gray-500 mt-1 text-xs">Khách hàng đổi điểm công đức để lấy mã. 1 điểm = 10.000đ chi tiêu.</p>
             </div>
-            <button onclick="openModal()" id="btn-add"
+            <a href="coupon-form.html" id="btn-add"
                 class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary/90 shadow font-medium transition">
                 <i data-lucide="plus" class="w-4 h-4"></i>
                 Thêm mã giảm giá
-            </button>
+            </a>
         </div>
 
-        <!-- Stats bar -->
-        <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
-                <div class="bg-primary/10 rounded-lg p-3"><i data-lucide="ticket" class="w-6 h-6 text-primary"></i></div>
-                <div><div class="text-2xl font-bold text-gray-800" id="stat-total">-</div><div class="text-xs text-gray-500">Tổng mã</div></div>
-            </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
-                <div class="bg-green-100 rounded-lg p-3"><i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i></div>
-                <div><div class="text-2xl font-bold text-gray-800" id="stat-active">-</div><div class="text-xs text-gray-500">Đang hoạt động</div></div>
-            </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
-                <div class="bg-amber-100 rounded-lg p-3"><i data-lucide="star" class="w-6 h-6 text-amber-600"></i></div>
-                <div><div class="text-2xl font-bold text-gray-800" id="stat-used">-</div><div class="text-xs text-gray-500">Lượt đã dùng</div></div>
-            </div>
-        </div>
 
         <!-- Filter -->
         <div class="bg-white p-4 rounded-t-lg shadow border-b flex gap-3">
             <input type="text" id="search" placeholder="Tìm mã, mô tả..."
-                class="border rounded px-3 py-2 flex-1 outline-none focus:border-primary" onkeyup="if(event.key==='Enter') loadItems(1)">
+                class="border rounded px-3 py-2 flex-1 outline-none focus:border-primary"
+                onkeyup="if(event.key==='Enter') loadItems(1)">
             <select id="filter-active" class="border rounded px-3 py-2 outline-none focus:border-primary">
                 <option value="">Tất cả trạng thái</option>
                 <option value="1">Hoạt động</option>
                 <option value="0">Vô hiệu</option>
             </select>
-            <button onclick="loadItems(1)" class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700 shadow">Tìm kiếm</button>
+            <button onclick="loadItems(1)" class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700 shadow">Tìm
+                kiếm</button>
         </div>
 
         <div class="bg-white rounded-b-lg shadow overflow-hidden">
@@ -122,7 +136,7 @@
                 <thead class="bg-gray-100 border-b text-gray-700">
                     <tr>
                         <th class="p-4">Mã / Mô tả</th>
-                        <th class="p-4 text-center">Loại giảm</th>
+                        <th class="p-4 text-center">Loại giảm giá</th>
                         <th class="p-4 text-center">Giá trị</th>
                         <th class="p-4 text-center">Điểm đổi</th>
                         <th class="p-4 text-center">Đã dùng</th>
@@ -136,94 +150,6 @@
             <div id="pagination" class="p-4 flex justify-center space-x-2 border-t"></div>
         </div>
     </main>
-
-    <!-- Modal Thêm/Sửa -->
-    <div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
-            <div class="bg-primary px-6 py-4 flex items-center justify-between">
-                <h2 class="text-lg font-bold text-white" id="modal-title">Thêm mã giảm giá</h2>
-                <button onclick="closeModal()" class="text-white/70 hover:text-white transition">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <form id="coupon-form" onsubmit="submitForm(event)" class="p-6 space-y-4">
-                <input type="hidden" id="form-id">
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Mã giảm giá <span class="text-red-500">*</span></label>
-                        <input type="text" id="form-code" placeholder="VD: GIAM50K"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary uppercase" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Điểm cần đổi <span class="text-red-500">*</span></label>
-                        <input type="number" id="form-points-cost" placeholder="VD: 50" min="1"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary" required>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Mô tả</label>
-                    <input type="text" id="form-description" placeholder="Mô tả ngắn gọn về mã giảm giá"
-                        class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Loại giảm giá <span class="text-red-500">*</span></label>
-                        <select id="form-discount-type" onchange="toggleDiscountFields()"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary" required>
-                            <option value="fixed">Giảm tiền cố định (VND)</option>
-                            <option value="percent">Giảm theo % đơn hàng</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1" id="label-discount-value">Số tiền giảm (VND) <span class="text-red-500">*</span></label>
-                        <input type="number" id="form-discount-value" placeholder="VD: 50000" min="1"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary" required>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Đơn tối thiểu (VND)</label>
-                        <input type="number" id="form-min-order" placeholder="VD: 200000" min="0"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary">
-                    </div>
-                    <div id="max-discount-field">
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Giảm tối đa (VND)</label>
-                        <input type="number" id="form-max-discount" placeholder="VD: 100000" min="0"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Giới hạn tổng lượt dùng</label>
-                        <input type="number" id="form-usage-limit" placeholder="Để trống = không giới hạn" min="1"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Hết hạn lúc</label>
-                        <input type="datetime-local" id="form-expires-at"
-                            class="w-full border rounded-lg px-3 py-2 outline-none focus:border-primary">
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <input type="checkbox" id="form-is-active" checked class="w-4 h-4 accent-primary">
-                    <label for="form-is-active" class="text-sm font-medium text-gray-700">Kích hoạt ngay</label>
-                </div>
-
-                <div class="pt-2 flex gap-3 justify-end">
-                    <button type="button" onclick="closeModal()"
-                        class="px-5 py-2 border rounded-lg text-gray-700 hover:bg-gray-50 transition">Hủy</button>
-                    <button type="submit" id="btn-submit"
-                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 shadow font-medium transition">Lưu</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/auth.js"></script>
@@ -239,21 +165,7 @@
             loadItems();
         });
 
-        function toggleDiscountFields() {
-            const type = document.getElementById('form-discount-type').value;
-            const label = document.getElementById('label-discount-value');
-            const maxField = document.getElementById('max-discount-field');
-            if (type === 'percent') {
-                label.textContent = 'Tỷ lệ giảm (%) *';
-                document.getElementById('form-discount-value').placeholder = 'VD: 10 (cho 10%)';
-                maxField.style.display = '';
-            } else {
-                label.textContent = 'Số tiền giảm (VND) *';
-                document.getElementById('form-discount-value').placeholder = 'VD: 50000';
-                maxField.style.display = 'none';
-                document.getElementById('form-max-discount').value = '';
-            }
-        }
+
 
         async function loadItems(page = 1) {
             currentPage = page;
@@ -266,12 +178,7 @@
                 const res = await ApiClient.get(`/admin/coupons?${params.toString()}`);
                 allItems = res.data;
 
-                // Stats
-                document.getElementById('stat-total').textContent = res.meta?.total ?? res.data.length;
-                const activeCount = res.data.filter(c => c.is_active).length;
-                document.getElementById('stat-active').textContent = activeCount;
-                const usedTotal = res.data.reduce((s, c) => s + (c.used_count || 0), 0);
-                document.getElementById('stat-used').textContent = usedTotal;
+
 
                 renderTable(res.data);
                 renderPagination(res.meta);
@@ -323,10 +230,10 @@
                     <td class="p-4 text-center">${statusBadge}</td>
                     <td class="p-4 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <button onclick="openModal(${JSON.stringify(c).replace(/"/g, '&quot;')})"
-                                class="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition" title="Sửa">
+                            <a href="coupon-form.html?id=${c.id}"
+                                class="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition inline-block align-middle" title="Sửa">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
+                            </a>
                             <button onclick="deleteCoupon(${c.id}, '${c.code}', ${c.used_count})"
                                 class="p-1.5 text-red-600 hover:bg-red-50 rounded transition" title="Xóa">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -347,66 +254,7 @@
             }
         }
 
-        function openModal(coupon = null) {
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal-title').textContent = coupon ? 'Sửa mã giảm giá' : 'Thêm mã giảm giá';
-            document.getElementById('form-id').value = coupon ? coupon.id : '';
-            document.getElementById('form-code').value = coupon ? coupon.code : '';
-            document.getElementById('form-description').value = coupon ? (coupon.description || '') : '';
-            document.getElementById('form-discount-type').value = coupon ? coupon.discount_type : 'fixed';
-            document.getElementById('form-discount-value').value = coupon ? coupon.discount_value : '';
-            document.getElementById('form-points-cost').value = coupon ? coupon.points_cost : '';
-            document.getElementById('form-min-order').value = coupon ? (coupon.min_order_amount || '') : '';
-            document.getElementById('form-max-discount').value = coupon ? (coupon.max_discount || '') : '';
-            document.getElementById('form-usage-limit').value = coupon ? (coupon.usage_limit || '') : '';
-            document.getElementById('form-expires-at').value = coupon && coupon.expires_at
-                ? new Date(coupon.expires_at).toISOString().slice(0, 16) : '';
-            document.getElementById('form-is-active').checked = coupon ? coupon.is_active : true;
-            toggleDiscountFields();
-        }
 
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-            document.getElementById('coupon-form').reset();
-        }
-
-        async function submitForm(e) {
-            e.preventDefault();
-            const id = document.getElementById('form-id').value;
-            const btn = document.getElementById('btn-submit');
-            btn.disabled = true;
-            btn.textContent = 'Đang lưu...';
-
-            const payload = {
-                code:             document.getElementById('form-code').value.toUpperCase().trim(),
-                description:      document.getElementById('form-description').value,
-                discount_type:    document.getElementById('form-discount-type').value,
-                discount_value:   parseFloat(document.getElementById('form-discount-value').value),
-                points_cost:      parseInt(document.getElementById('form-points-cost').value),
-                min_order_amount: parseFloat(document.getElementById('form-min-order').value) || 0,
-                max_discount:     document.getElementById('form-max-discount').value ? parseFloat(document.getElementById('form-max-discount').value) : null,
-                usage_limit:      document.getElementById('form-usage-limit').value ? parseInt(document.getElementById('form-usage-limit').value) : null,
-                expires_at:       document.getElementById('form-expires-at').value || null,
-                is_active:        document.getElementById('form-is-active').checked,
-            };
-
-            try {
-                if (id) {
-                    await ApiClient.put(`/admin/coupons/${id}`, payload);
-                    showNotification('Cập nhật mã giảm giá thành công!', 'success');
-                } else {
-                    await ApiClient.post('/admin/coupons', payload);
-                    showNotification('Thêm mã giảm giá thành công!', 'success');
-                }
-                closeModal();
-                loadItems(currentPage);
-            } catch (err) {
-                showNotification(err.message || 'Có lỗi xảy ra', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Lưu';
-            }
-        }
 
         async function deleteCoupon(id, code, usedCount) {
             if (usedCount > 0) {
