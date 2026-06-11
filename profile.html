@@ -226,7 +226,30 @@
                         <textarea id="address" name="address" rows="3"
                             class="w-full border rounded px-3 py-2"></textarea>
                     </div>
-                    <div class="flex justify-end">
+                    
+                    <!-- Password Change Section -->
+                    <div class="border-t border-gray-200 pt-6 mt-6">
+                        <h3 class="text-lg font-bold mb-4 text-primary">Thay đổi mật khẩu (Để trống nếu không muốn đổi)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Mật khẩu hiện tại</label>
+                                <input type="password" id="old_password" name="old_password"
+                                    class="w-full border rounded px-3 py-2" placeholder="••••••••">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Mật khẩu mới</label>
+                                <input type="password" id="password" name="password"
+                                    class="w-full border rounded px-3 py-2" placeholder="••••••••">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Xác nhận mật khẩu mới</label>
+                                <input type="password" id="password_confirmation" name="password_confirmation"
+                                    class="w-full border rounded px-3 py-2" placeholder="••••••••">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4">
                         <button type="submit" id="btn-submit"
                             class="bg-[#852525] text-white font-medium text-m px-6 py-2 rounded-full hover:bg-primary transition">
                             Lưu Thay Đổi
@@ -398,11 +421,24 @@
             if (!data.gender) delete data.gender;
             if (!data.birthday) delete data.birthday;
 
+            // Remove password keys if new password is not specified
+            if (!data.password) {
+                delete data.password;
+                delete data.old_password;
+                delete data.password_confirmation;
+            }
+
             try {
                 await ApiClient.patch('/profile', data);
 
                 alertEl.innerText = 'Cập nhật thành công!';
                 alertEl.className = 'px-4 py-3 rounded mb-4 bg-green-100 text-green-700';
+                
+                // Clear password input fields on success
+                document.getElementById('old_password').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('password_confirmation').value = '';
+
                 await loadProfile();
             } catch (err) {
                 alertEl.innerText = err.message || 'Có lỗi xảy ra.';
