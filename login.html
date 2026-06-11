@@ -148,32 +148,7 @@
                 </div>
             </form>
 
-            <form id="verify-form" class="hidden mt-8 space-y-6">
-                <input type="hidden" id="verify-user-id">
-                <div class="rounded-md shadow-sm space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Mã xác thực (6 chữ số) *</label>
-                        <input id="verify-code" name="code" type="text" required maxlength="6" pattern="^[0-9]{6}$"
-                            placeholder="------"
-                            class="appearance-none rounded block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary text-center text-3xl font-bold tracking-widest sm:text-sm">
-                    </div>
-                </div>
 
-                <div>
-                    <button type="submit" id="btn-verify-submit"
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-[#6b1414] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
-                        Xác Nhận Xác Thực
-                    </button>
-                </div>
-
-                <div class="text-center text-sm text-gray-600 mt-4">
-                    Không nhận được mã? 
-                    <button type="button" id="btn-resend" class="font-medium text-accent hover:underline focus:outline-none">
-                        Gửi lại mã
-                    </button>
-                    <span id="resend-countdown" class="hidden text-gray-400 font-medium">(Gửi lại sau 60s)</span>
-                </div>
-            </form>
 
             <div id="social-login-container" class="mt-6">
                 <div class="relative">
@@ -207,52 +182,39 @@
     <script src="assets/js/api.js"></script>
     <script src="assets/js/auth.js"></script>
     <script>
-        let resendTimer = null;
-
-        function startResendCountdown() {
-            const btnResend = document.getElementById('btn-resend');
-            const countdownSpan = document.getElementById('resend-countdown');
-            btnResend.classList.add('hidden');
-            countdownSpan.classList.remove('hidden');
-            
-            let seconds = 60;
-            countdownSpan.innerText = `(Gửi lại sau ${seconds}s)`;
-            
-            if (resendTimer) clearInterval(resendTimer);
-            resendTimer = setInterval(() => {
-                seconds--;
-                if (seconds <= 0) {
-                    clearInterval(resendTimer);
-                    btnResend.classList.remove('hidden');
-                    countdownSpan.classList.add('hidden');
-                } else {
-                    countdownSpan.innerText = `(Gửi lại sau ${seconds}s)`;
-                }
-            }, 1000);
-        }
-
         document.addEventListener('DOMContentLoaded', async () => {
             Auth.requireGuest();
 
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
             const error = urlParams.get('error');
+            const verified = urlParams.get('verified');
 
             if (token) {
                 ApiClient.setToken(token);
                 window.location.href = 'index.html';
             }
 
+            const errAlert = document.getElementById('error-alert');
             if (error) {
-                const errAlert = document.getElementById('error-alert');
                 if (error === 'locked') {
                     errAlert.innerText = 'Tài khoản của bạn đã bị khóa. Mời liên hệ chủ cửa hàng để biết thêm chi tiết.';
+                } else if (error === 'invalid_verification_link') {
+                    errAlert.innerText = 'Liên kết xác thực email không hợp lệ hoặc đã hết hạn.';
                 } else {
                     errAlert.innerText = 'Đăng nhập Google thất bại.';
                 }
                 errAlert.classList.remove('hidden');
 
                 // Remove error from URL to avoid showing it again on refresh
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            if (verified === '1') {
+                const successAlert = document.createElement('div');
+                successAlert.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
+                successAlert.innerText = 'Xác thực email thành công! Bạn có thể đăng nhập ngay bây giờ.';
+                errAlert.parentNode.insertBefore(successAlert, errAlert);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
@@ -304,14 +266,34 @@
 
                 if (!res.ok) {
                     if (res.status === 403 && data.status === 'unverified') {
-                        // Switch to verification step
-                        document.getElementById('login-form').classList.add('hidden');
-                        document.getElementById('social-login-container').classList.add('hidden');
-                        document.getElementById('verify-form').classList.remove('hidden');
-                        document.getElementById('verify-user-id').value = data.user_id;
-                        document.getElementById('form-title').innerText = 'Xác Thực Email';
-                        document.getElementById('form-subtitle').innerHTML = `Tài khoản chưa được xác thực. Mã xác thực mới đã được gửi tới email <strong>${data.email}</strong>`;
-                        startResendCountdown();
+                        errAlert.innerHTML = `Tài khoản chưa được xác thực email. <a href="#" id="resend-verification-link" class="underline font-semibold text-accent hover:text-primary">Bấm vào đây để gửi lại email xác thực</a>.`;
+                        errAlert.classList.remove('hidden');
+                        btn.disabled = false;
+                        btn.innerText = 'Đăng Nhập';
+
+                        document.getElementById('resend-verification-link').addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            const resendLink = e.target;
+                            resendLink.innerText = 'Đang gửi...';
+                            resendLink.style.pointerEvents = 'none';
+                            try {
+                                const resendRes = await fetch(API_BASE + '/email/verification-notification', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                                    body: JSON.stringify({ email: data.email })
+                                });
+                                const resendData = await resendRes.json();
+                                if (!resendRes.ok) {
+                                    throw new Error(resendData.message || 'Gửi lại email thất bại.');
+                                }
+                                alert(resendData.message || 'Đã gửi lại link xác thực thành công. Vui lòng kiểm tra email của bạn.');
+                                resendLink.innerText = 'Đã gửi thành công';
+                            } catch (error) {
+                                alert(error.message);
+                                resendLink.innerText = 'Bấm vào đây để gửi lại email xác thực';
+                                resendLink.style.pointerEvents = 'auto';
+                            }
+                        });
                         return;
                     }
                     throw new Error(data.message || 'Thông tin đăng nhập không chính xác.');
@@ -330,74 +312,6 @@
                 errAlert.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerText = 'Đăng Nhập';
-            }
-        });
-
-        document.getElementById('verify-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-verify-submit');
-            const errAlert = document.getElementById('error-alert');
-            errAlert.classList.add('hidden');
-
-            btn.disabled = true;
-            btn.innerText = 'Đang xác thực...';
-
-            const user_id = document.getElementById('verify-user-id').value;
-            const code = document.getElementById('verify-code').value;
-
-            try {
-                const res = await fetch(API_BASE + '/auth/verify-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ user_id, code })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.message || 'Mã xác thực không hợp lệ.');
-                }
-
-                alert('Xác thực tài khoản thành công! Đang đăng nhập...');
-                ApiClient.setToken(data.token);
-                
-                const user = await Auth.getUser();
-                if (user && user.role === 'admin') {
-                    window.location.href = 'admin/dashboard.html';
-                } else {
-                    window.location.href = 'index.html';
-                }
-            } catch (err) {
-                errAlert.innerText = err.message;
-                errAlert.classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerText = 'Xác Nhận Xác Thực';
-            }
-        });
-
-        document.getElementById('btn-resend').addEventListener('click', async () => {
-            const user_id = document.getElementById('verify-user-id').value;
-            const errAlert = document.getElementById('error-alert');
-            errAlert.classList.add('hidden');
-
-            try {
-                const res = await fetch(API_BASE + '/auth/resend-verification', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ user_id })
-                });
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.message || 'Không thể gửi lại mã.');
-                }
-
-                alert('Đã gửi lại mã xác thực thành công. Vui lòng kiểm tra email.');
-                startResendCountdown();
-            } catch (err) {
-                errAlert.innerText = err.message;
-                errAlert.classList.remove('hidden');
             }
         });
     </script>

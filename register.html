@@ -181,8 +181,9 @@
                 </div>
 
                 <div class="text-center text-sm text-gray-600 mt-4">
-                    Không nhận được mã? 
-                    <button type="button" id="btn-resend" class="font-medium text-accent hover:underline focus:outline-none">
+                    Không nhận được mã?
+                    <button type="button" id="btn-resend"
+                        class="font-medium text-accent hover:underline focus:outline-none">
                         Gửi lại mã
                     </button>
                     <span id="resend-countdown" class="hidden text-gray-400 font-medium">(Gửi lại sau 60s)</span>
@@ -208,10 +209,10 @@
             const countdownSpan = document.getElementById('resend-countdown');
             btnResend.classList.add('hidden');
             countdownSpan.classList.remove('hidden');
-            
+
             let seconds = 60;
             countdownSpan.innerText = `(Gửi lại sau ${seconds}s)`;
-            
+
             if (resendTimer) clearInterval(resendTimer);
             resendTimer = setInterval(() => {
                 seconds--;
