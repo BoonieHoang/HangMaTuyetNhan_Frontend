@@ -276,7 +276,7 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            z-index: 9999;
+            z-index: 10001;
             width: 54px;
             height: 54px;
             border-radius: 50%;
@@ -294,7 +294,7 @@
             transform: scale(1.08);
             box-shadow: 0 6px 28px rgba(111,42,42,0.5);
         }
-        #chatbot-container { position: fixed; bottom: 24px; right: 24px; z-index: 9998; }
+        #chatbot-container { position: fixed; bottom: 24px; right: 24px; z-index: 10000; }
     `;
     document.head.appendChild(style);
 
