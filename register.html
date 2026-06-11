@@ -114,8 +114,8 @@
     <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8 bg-white p-14 rounded-xl shadow-lg border border-primary">
             <div>
-                <h2 class="mt-2 text-center text-3xl font-bold text-primary">Đăng Ký Tài Khoản</h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
+                <h2 id="form-title" class="mt-2 text-center text-3xl font-bold text-primary">Đăng Ký Tài Khoản</h2>
+                <p id="form-subtitle" class="mt-2 text-center text-sm text-gray-600">
                     Đã có tài khoản? <a href="login.html" class="font-medium text-accent">Đăng
                         nhập</a>
                 </p>
@@ -138,8 +138,8 @@
                             class="appearance-none rounded block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email </label>
-                        <input id="email" name="email" type="email"
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                        <input id="email" name="email" type="email" required
                             class="appearance-none rounded block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
                     </div>
                     <div>
@@ -161,6 +161,33 @@
                     </button>
                 </div>
             </form>
+
+            <form id="verify-form" class="hidden mt-8 space-y-6">
+                <input type="hidden" id="verify-user-id">
+                <div class="rounded-md shadow-sm space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mã xác thực (6 chữ số) *</label>
+                        <input id="verify-code" name="code" type="text" required maxlength="6" pattern="^[0-9]{6}$"
+                            placeholder="------"
+                            class="appearance-none rounded block w-full px-3 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary text-center text-3xl font-bold tracking-widest sm:text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" id="btn-verify-submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-[#6b1414] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+                        Xác Nhận Xác Thực
+                    </button>
+                </div>
+
+                <div class="text-center text-sm text-gray-600 mt-4">
+                    Không nhận được mã? 
+                    <button type="button" id="btn-resend" class="font-medium text-accent hover:underline focus:outline-none">
+                        Gửi lại mã
+                    </button>
+                    <span id="resend-countdown" class="hidden text-gray-400 font-medium">(Gửi lại sau 60s)</span>
+                </div>
+            </form>
         </div>
     </main>
     <!-- Footer -->
@@ -174,6 +201,30 @@
     <script src="assets/js/api.js"></script>
     <script src="assets/js/auth.js"></script>
     <script>
+        let resendTimer = null;
+
+        function startResendCountdown() {
+            const btnResend = document.getElementById('btn-resend');
+            const countdownSpan = document.getElementById('resend-countdown');
+            btnResend.classList.add('hidden');
+            countdownSpan.classList.remove('hidden');
+            
+            let seconds = 60;
+            countdownSpan.innerText = `(Gửi lại sau ${seconds}s)`;
+            
+            if (resendTimer) clearInterval(resendTimer);
+            resendTimer = setInterval(() => {
+                seconds--;
+                if (seconds <= 0) {
+                    clearInterval(resendTimer);
+                    btnResend.classList.remove('hidden');
+                    countdownSpan.classList.add('hidden');
+                } else {
+                    countdownSpan.innerText = `(Gửi lại sau ${seconds}s)`;
+                }
+            }, 1000);
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             Auth.requireGuest();
 
@@ -230,13 +281,80 @@
                     throw new Error(data.message || 'Lỗi đăng ký.');
                 }
 
+                // Switch to verification step
+                document.getElementById('register-form').classList.add('hidden');
+                document.getElementById('verify-form').classList.remove('hidden');
+                document.getElementById('verify-user-id').value = data.user_id;
+                document.getElementById('form-title').innerText = 'Xác Thực Email';
+                document.getElementById('form-subtitle').innerHTML = `Mã xác thực đã được gửi tới email <strong>${data.email}</strong>`;
+                startResendCountdown();
+            } catch (err) {
+                errAlert.innerText = err.message;
+                errAlert.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = 'Đăng Ký';
+            }
+        });
+
+        document.getElementById('verify-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-verify-submit');
+            const errAlert = document.getElementById('error-alert');
+            errAlert.classList.add('hidden');
+
+            btn.disabled = true;
+            btn.innerText = 'Đang xác thực...';
+
+            const user_id = document.getElementById('verify-user-id').value;
+            const code = document.getElementById('verify-code').value;
+
+            try {
+                const res = await fetch(API_BASE + '/auth/verify-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ user_id, code })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Mã xác thực không hợp lệ.');
+                }
+
+                alert('Xác thực tài khoản thành công! Đang đăng nhập...');
                 ApiClient.setToken(data.token);
                 window.location.href = 'index.html';
             } catch (err) {
                 errAlert.innerText = err.message;
                 errAlert.classList.remove('hidden');
                 btn.disabled = false;
-                btn.innerText = 'Đăng Ký';
+                btn.innerText = 'Xác Nhận Xác Thực';
+            }
+        });
+
+        document.getElementById('btn-resend').addEventListener('click', async () => {
+            const user_id = document.getElementById('verify-user-id').value;
+            const errAlert = document.getElementById('error-alert');
+            errAlert.classList.add('hidden');
+
+            try {
+                const res = await fetch(API_BASE + '/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ user_id })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.message || 'Không thể gửi lại mã.');
+                }
+
+                alert('Đã gửi lại mã xác thực thành công. Vui lòng kiểm tra email.');
+                startResendCountdown();
+            } catch (err) {
+                errAlert.innerText = err.message;
+                errAlert.classList.remove('hidden');
             }
         });
     </script>
