@@ -203,9 +203,12 @@
                     <!-- Shipping Address -->
                     <div class="bg-white border-2 border-gray-300 rounded-sm p-6">
                         <h3 class="text-sm font-bold uppercase tracking-widest flex text-center text-primary mb-5">
-                            Địa chỉ giao hàng
+                            Vận chuyển & Địa chỉ
                         </h3>
-                        <p id="s-address" class="text-sm text-gray-700 mb-3 leading-relaxed"></p>
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Phương thức</p>
+                        <p id="s-method" class="text-sm text-gray-800 font-bold mb-3"></p>
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Địa chỉ</p>
+                        <p id="s-address" class="text-sm text-gray-700 leading-relaxed"></p>
                     </div>
                 </div>
             </div>
@@ -271,6 +274,8 @@
             document.getElementById('s-name').innerText = order.fullname;
             document.getElementById('s-phone').innerText = order.phone;
             document.getElementById('s-email').innerText = order.email;
+            const isShip = parseFloat(order.shipping_fee) > 0;
+            document.getElementById('s-method').innerText = isShip ? 'Ship tận nhà' : 'Đến nhận tại cửa hàng';
             document.getElementById('s-address').innerText = order.ship_address;
             document.getElementById('s-note').innerText = order.note || 'Không có ghi chú.';
             document.getElementById('p-method').innerText = order.payment_method === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : 'Chuyển khoản (VietQR)';
