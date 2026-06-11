@@ -503,13 +503,16 @@
     var CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
     function fetchHolidays() {
-        fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } })
-            .then(function (r) {
+        const getPromise = (typeof ApiClient !== 'undefined')
+            ? ApiClient.get('/smart-calendar')
+            : fetch(API_BASE + '/smart-calendar', { headers: { 'Accept': 'application/json' } }).then(function(r) {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
                 return r.json();
-            })
+            });
+
+        getPromise
             .then(function (data) {
-                fetchedHolidays = data || [];
+                fetchedHolidays = (data && data.data) ? data.data : (data || []);
                 try {
                     localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedHolidays));
                     localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
