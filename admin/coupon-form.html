@@ -218,10 +218,10 @@
                 document.getElementById('code').value = c.code;
                 document.getElementById('description').value = c.description || '';
                 document.getElementById('discount_type').value = c.discount_type;
-                document.getElementById('discount_value').value = c.discount_value;
+                document.getElementById('discount_value').value = parseFloat(c.discount_value);
                 document.getElementById('points_cost').value = c.points_cost;
-                document.getElementById('min_order_amount').value = c.min_order_amount || '';
-                document.getElementById('max-discount').value = c.max_discount || '';
+                document.getElementById('min_order_amount').value = c.min_order_amount ? parseFloat(c.min_order_amount) : '';
+                document.getElementById('max-discount').value = c.max_discount ? parseFloat(c.max_discount) : '';
                 document.getElementById('usage_limit').value = c.usage_limit || '';
                 document.getElementById('expires_at').value = c.expires_at
                     ? new Date(c.expires_at).toISOString().slice(0, 16) : '';

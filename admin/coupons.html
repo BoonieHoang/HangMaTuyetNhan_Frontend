@@ -193,7 +193,7 @@
             }
             tbody.innerHTML = data.map(c => {
                 const discountLabel = c.discount_type === 'percent'
-                    ? `${c.discount_value}%${c.max_discount ? ` (tối đa ${Number(c.max_discount).toLocaleString('vi-VN')}đ)` : ''}`
+                    ? `${parseFloat(c.discount_value)}%${c.max_discount ? ` (tối đa ${Number(c.max_discount).toLocaleString('vi-VN')}đ)` : ''}`
                     : `${Number(c.discount_value).toLocaleString('vi-VN')}đ`;
                 const statusBadge = c.is_active
                     ? `<span class="px-2 py-1 rounded-full text-xs font-bold badge-active">Hoạt động</span>`
