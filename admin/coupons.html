@@ -181,7 +181,7 @@
 
 
                 renderTable(res.data);
-                renderPagination(res.meta);
+                renderPagination(res.meta || res);
             } catch (err) { console.error(err); }
         }
 
