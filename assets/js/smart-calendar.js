@@ -498,8 +498,8 @@
     });
 
     // ── Fetch from backend with LocalStorage Cache ─────────────────────
-    var CACHE_KEY = 'sc_holidays_cache';
-    var CACHE_TIME_KEY = 'sc_holidays_cache_time';
+    var CACHE_KEY = 'sc_holidays_cache_v2';
+    var CACHE_TIME_KEY = 'sc_holidays_cache_time_v2';
     var CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
     function fetchHolidays() {
@@ -513,11 +513,13 @@
         getPromise
             .then(function (data) {
                 fetchedHolidays = (data && data.data) ? data.data : (data || []);
-                try {
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedHolidays));
-                    localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
-                } catch (e) {
-                    console.warn('Failed to save calendar cache:', e);
+                if (fetchedHolidays.length > 0) {
+                    try {
+                        localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedHolidays));
+                        localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+                    } catch (e) {
+                        console.warn('Failed to save calendar cache:', e);
+                    }
                 }
                 renderHolidayCards(fetchedHolidays);
                 updateCalendarView();
@@ -534,8 +536,12 @@
 
         if (cachedData && cachedTime && (Date.now() - parseInt(cachedTime, 10) < CACHE_DURATION)) {
             fetchedHolidays = JSON.parse(cachedData) || [];
-            renderHolidayCards(fetchedHolidays);
-            updateCalendarView();
+            if (fetchedHolidays.length > 0) {
+                renderHolidayCards(fetchedHolidays);
+                updateCalendarView();
+            } else {
+                fetchHolidays();
+            }
         } else {
             fetchHolidays();
         }
