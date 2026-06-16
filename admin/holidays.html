@@ -103,7 +103,7 @@
                     <tr>
                         <th class="p-4">Tên ngày lễ</th>
                         <th class="p-4">Mô tả</th>
-                        <th class="p-4">Slug nghi lễ liên kết</th>
+                        <th class="p-4">Bài nghi lễ tham khảo</th>
                         <th class="p-4 text-right">Hành động</th>
                     </tr>
                 </thead>
@@ -136,9 +136,11 @@
                         <td class="p-4 font-bold text-gray-900">${item.name}</td>
                         <td class="p-4 text-gray-600 max-w-xs truncate" title="${item.description || ''}">${item.description || '<span class="text-gray-400 italic">Chưa có mô tả</span>'}</td>
                         <td class="p-4">
-                            ${item.ritual_slug
-                        ? `<span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">${item.ritual_slug}</span>`
-                        : '<span class="text-gray-400 italic text-xs">—</span>'}
+                            ${(() => {
+                                const rituals = Array.isArray(item.ritual_slug) ? item.ritual_slug : [];
+                                if (!rituals.length) return '<span class="text-gray-400 italic text-xs">—</span>';
+                                return rituals.map(r => `<span class="inline-block text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium mr-1 mb-1">${r.title}</span>`).join('');
+                            })()}
                         </td>
                         <td class="p-4 space-x-3 text-right">
                             <a href="holiday-form.html?id=${item.id}" class="text-blue-600 hover:text-blue-800 font-medium">Sửa</a>

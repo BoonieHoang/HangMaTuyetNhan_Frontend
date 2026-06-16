@@ -275,24 +275,11 @@
 
                 <!-- Holiday Description Banner -->
                 <div id="holiday-description-banner"
-                    class="hidden mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <div class="flex-1">
-                            <p id="holiday-description-text" class="text-sm text-gray-700 leading-relaxed"></p>
-                            <a id="holiday-description-link" href="#"
-                                class="inline-flex items-center gap-1 mt-2 text-xs font-bold text-primary hover:text-accent transition uppercase tracking-wider hidden">
-                                Xem thêm
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
+                    class="hidden mb-6 p-4 bg-accent/5 border border-accent/30 rounded-lg">
+                    <div class="flex-1">
+                        <p id="holiday-description-name" class="text-sm font-bold text-primary mb-1"></p>
+                        <p id="holiday-description-text" class="text-sm text-gray-700 leading-relaxed"></p>
+                        <div id="holiday-description-links" class="flex flex-wrap gap-x-4 gap-y-1 mt-2"></div>
                     </div>
                 </div>
 
@@ -632,8 +619,9 @@
 
         function showHolidayBanner(id) {
             const banner = document.getElementById('holiday-description-banner');
+            const nameEl = document.getElementById('holiday-description-name');
             const textEl = document.getElementById('holiday-description-text');
-            const linkEl = document.getElementById('holiday-description-link');
+            const linksEl = document.getElementById('holiday-description-links');
             if (!banner || !textEl) return;
 
             if (!id) {
@@ -647,15 +635,20 @@
                 return;
             }
 
+            nameEl.textContent = holiday.name;
             textEl.textContent = holiday.description;
             banner.classList.remove('hidden');
 
-            if (holiday.ritual_slug) {
-                linkEl.href = `ritual-detail.html?slug=${encodeURIComponent(holiday.ritual_slug)}`;
-                linkEl.classList.remove('hidden');
-            } else {
-                linkEl.classList.add('hidden');
-            }
+            // Build ritual links — ritual_slug is an array of {slug, title}
+            linksEl.innerHTML = '';
+            const rituals = Array.isArray(holiday.ritual_slug) ? holiday.ritual_slug : [];
+            rituals.forEach(r => {
+                const a = document.createElement('a');
+                a.href = `ritual-detail.html?slug=${encodeURIComponent(r.slug)}`;
+                a.className = 'inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-accent transition uppercase tracking-wider';
+                a.innerHTML = `Xem thêm: ${r.title} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+                linksEl.appendChild(a);
+            });
         }
 
         async function loadPurposes() {
