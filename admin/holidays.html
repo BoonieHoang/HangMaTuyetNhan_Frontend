@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Ngày Lễ - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6F2A2A',
+                        accent: '#c49a45',
+                        bgtheme: '#FFF3D9',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f3ee; }
+    </style>
+</head>
+
+<body class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-60 bg-primary text-white flex flex-col min-h-screen fixed top-0 left-0 z-40">
+        <div class="p-6 border-b border-white/10">
+            <h1 class="text-lg font-bold tracking-wide">Admin Panel</h1>
+            <p class="text-xs text-white/60 mt-1">Tuyết Nhàn</p>
+        </div>
+        <nav class="flex-1 py-4">
+            <ul class="space-y-1 px-3">
+                <li><a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">📊 Dashboard</a></li>
+                <li><a href="products.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">📦 Sản phẩm</a></li>
+                <li><a href="categories.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">📂 Danh mục</a></li>
+                <li><a href="rituals.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">🕯️ Nghi lễ</a></li>
+                <li><a href="holidays.html" class="flex items-center gap-3 px-3 py-2 rounded bg-white/20 text-sm font-semibold text-white transition">🎋 Ngày lễ</a></li>
+                <li><a href="orders.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">🧾 Đơn hàng</a></li>
+                <li><a href="users.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">👥 Người dùng</a></li>
+                <li><a href="coupons.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">🎟️ Coupon</a></li>
+                <li><a href="system-config.html" class="flex items-center gap-3 px-3 py-2 rounded text-sm text-white/80 hover:bg-white/10 hover:text-white transition">⚙️ Cấu hình</a></li>
+            </ul>
+        </nav>
+        <div class="p-4 border-t border-white/10">
+            <button onclick="Auth.logout()" class="w-full text-left text-sm text-white/70 hover:text-white transition px-3 py-2">🚪 Đăng xuất</button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 ml-60 p-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">Quản lý Ngày Lễ</h1>
+                <p class="text-sm text-gray-500 mt-1">Thêm mô tả và liên kết bài viết nghi lễ cho từng ngày lễ</p>
+            </div>
+
+            <!-- Notification -->
+            <div id="notification" class="hidden mb-4 px-4 py-3 rounded text-sm font-medium"></div>
+
+            <!-- Holiday List -->
+            <div id="holiday-list" class="space-y-4">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
+                    <div class="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-lg font-bold text-gray-800">Chỉnh sửa ngày lễ</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <input type="hidden" id="edit-id">
+
+            <div class="mb-4">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Tên ngày lễ</label>
+                <input type="text" id="edit-name" readonly
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500 cursor-not-allowed">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Mô tả ngày lễ</label>
+                <textarea id="edit-description" rows="4" placeholder="Nhập mô tả về ý nghĩa và cách chuẩn bị cho ngày lễ này..."
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary resize-y"></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Slug bài viết nghi lễ</label>
+                <input type="text" id="edit-ritual-slug" placeholder="vd: le-ta-mo-cung-ong-ba"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                <p class="text-xs text-gray-400 mt-1">Slug của bài viết nghi lễ tương ứng (để trống nếu không có)</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="saveHoliday()"
+                    class="flex-1 bg-primary text-white font-bold py-2.5 px-4 rounded-lg text-sm hover:opacity-90 transition">
+                    Lưu thay đổi
+                </button>
+                <button onclick="closeModal()"
+                    class="px-4 py-2.5 border border-gray-200 text-gray-600 font-medium rounded-lg text-sm hover:bg-gray-50 transition">
+                    Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!Auth.isLoggedIn()) {
+                window.location.href = '../login.html';
+                return;
+            }
+            loadHolidays();
+        });
+
+        let holidaysData = [];
+
+        async function loadHolidays() {
+            try {
+                const res = await ApiClient.get('/holidays');
+                holidaysData = res;
+                renderHolidays();
+            } catch (e) {
+                document.getElementById('holiday-list').innerHTML = '<p class="text-red-500 text-sm">Không thể tải danh sách ngày lễ.</p>';
+            }
+        }
+
+        function renderHolidays() {
+            const list = document.getElementById('holiday-list');
+            if (!holidaysData.length) {
+                list.innerHTML = '<p class="text-gray-400 text-sm">Chưa có ngày lễ nào.</p>';
+                return;
+            }
+
+            list.innerHTML = holidaysData.map(h => `
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-5 flex items-start gap-4 hover:shadow-md transition">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-bold text-gray-800 text-sm mb-1">${h.name}</h3>
+                        ${h.description
+                            ? `<p class="text-xs text-gray-500 leading-relaxed line-clamp-2">${h.description}</p>`
+                            : `<p class="text-xs text-gray-400 italic">Chưa có mô tả</p>`
+                        }
+                        ${h.ritual_slug
+                            ? `<span class="inline-flex items-center gap-1 mt-2 text-[10px] font-medium bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                🔗 ${h.ritual_slug}
+                               </span>`
+                            : ''
+                        }
+                    </div>
+                    <button onclick="openEditModal(${h.id})"
+                        class="flex-shrink-0 text-xs font-bold text-primary border border-primary/30 px-3 py-1.5 rounded hover:bg-primary hover:text-white transition">
+                        Sửa
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openEditModal(id) {
+            const h = holidaysData.find(x => x.id === id);
+            if (!h) return;
+            document.getElementById('edit-id').value = h.id;
+            document.getElementById('edit-name').value = h.name;
+            document.getElementById('edit-description').value = h.description || '';
+            document.getElementById('edit-ritual-slug').value = h.ritual_slug || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        async function saveHoliday() {
+            const id = document.getElementById('edit-id').value;
+            const description = document.getElementById('edit-description').value.trim();
+            const ritual_slug = document.getElementById('edit-ritual-slug').value.trim();
+
+            try {
+                await ApiClient.patch(`/admin/holidays/${id}`, { description, ritual_slug });
+                // Update local data
+                const idx = holidaysData.findIndex(h => h.id == id);
+                if (idx >= 0) {
+                    holidaysData[idx].description = description;
+                    holidaysData[idx].ritual_slug = ritual_slug;
+                }
+                renderHolidays();
+                closeModal();
+                showNotif('Đã lưu thành công!', 'success');
+            } catch (e) {
+                showNotif(e.message || 'Lỗi khi lưu', 'error');
+            }
+        }
+
+        function showNotif(msg, type) {
+            const el = document.getElementById('notification');
+            el.textContent = msg;
+            el.className = `mb-4 px-4 py-3 rounded text-sm font-medium ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
+        // Close modal on backdrop click
+        document.getElementById('edit-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('edit-modal')) closeModal();
+        });
+    </script>
+</body>
+
+</html>

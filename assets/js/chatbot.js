@@ -234,6 +234,26 @@
             font-weight: 700;
             margin-top: auto;
         }
+        .cb-card-add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            background: #6F2A2A;
+            color: #fff;
+            border: none;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .cb-card-add-btn:hover { background: #c49a45; }
+        .cb-card-add-btn:disabled { background: #d1d5db; cursor: not-allowed; }
 
         /* Input area */
         #cb-input-area {
@@ -523,18 +543,25 @@
         products.slice(0, 4).forEach(p => {
             const price = parseInt(p.price).toLocaleString('vi-VN');
             const imgSrc = p.image || 'https://placehold.co/140x90/f5f2eb/9b7553?text=SP';
-            const card = document.createElement('a');
+            const card = document.createElement('div');
             card.className = 'cb-product-card';
-            card.href = `product-detail.html?slug=${encodeURIComponent(p.slug)}`;
-            card.target = '_blank';
-            card.rel = 'noopener';
+            card.style.cursor = 'default';
             card.innerHTML = `
-                <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.name)}" loading="lazy"
-                     onerror="this.src='https://placehold.co/140x90/f5f2eb/9b7553?text=SP'">
-                <div class="cb-card-body">
-                    <div class="cb-card-name">${escapeHtml(p.name)}</div>
-                    <div class="cb-card-price">${price} đ</div>
-                </div>`;
+                <a href="product-detail.html?slug=${encodeURIComponent(p.slug)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block">
+                    <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.name)}" loading="lazy"
+                         onerror="this.src='https://placehold.co/140x90/f5f2eb/9b7553?text=SP'">
+                    <div class="cb-card-body">
+                        <div class="cb-card-name">${escapeHtml(p.name)}</div>
+                        <div class="cb-card-price">${price} đ</div>
+                    </div>
+                </a>
+                <button class="cb-card-add-btn" onclick="addToCartFromChatbot(${p.id}, this)" aria-label="Thêm ${escapeHtml(p.name)} vào giỏ">
+                    <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Thêm vào giỏ
+                </button>`;
             scroll.appendChild(card);
         });
 
@@ -549,6 +576,34 @@
             .replace(/&/g, '&amp;').replace(/</g, '&lt;')
             .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
+
+    // ── Add to cart from chatbot ───────────────────────────────────────
+    window.addToCartFromChatbot = async function (productId, btn) {
+        if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
+            // Redirect to login with return hint
+            window.location.href = 'login.html';
+            return;
+        }
+        const original = btn.innerHTML;
+        btn.disabled = true;
+        btn.textContent = 'Đang thêm...';
+        try {
+            await ApiClient.post('/cart/items', { product_id: productId, quantity: 1 });
+            btn.textContent = '✓ Đã thêm!';
+            btn.style.background = '#16a34a';
+            // Update cart count if function exists
+            if (typeof updateCartCount === 'function') updateCartCount();
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.background = '';
+                btn.disabled = false;
+            }, 2000);
+        } catch (err) {
+            btn.innerHTML = original;
+            btn.disabled = false;
+            alert(err.message || 'Lỗi khi thêm vào giỏ hàng');
+        }
+    };
 
     // ── Global: Smart Calendar integration ────────────────────────────
     window.openChatbotWithMessage = function (msg) {

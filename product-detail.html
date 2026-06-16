@@ -426,7 +426,7 @@
             holDiv.innerHTML = '';
             if (p.holidays && p.holidays.length > 0) {
                 p.holidays.forEach(h => {
-                    holDiv.innerHTML += `<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${h.name}</span>`;
+                    holDiv.innerHTML += `<a href="products.html?holiday_id=${h.id}" class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider hover:bg-primary hover:text-white transition cursor-pointer">${h.name}</a>`;
                 });
             }
 
@@ -435,7 +435,7 @@
             purDiv.innerHTML = '';
             if (p.purposes && p.purposes.length > 0) {
                 p.purposes.forEach(pur => {
-                    purDiv.innerHTML += `<span class="bg-accent/10 text-accent text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${pur.name}</span>`;
+                    purDiv.innerHTML += `<a href="products.html?purpose_id=${pur.id}" class="bg-accent/10 text-accent text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider hover:bg-accent hover:text-white transition cursor-pointer">${pur.name}</a>`;
                 });
             }
 
