@@ -146,9 +146,10 @@
                     </tr>
                 `).join('');
 
-                renderPagination(res.meta);
-                if (res.meta && res.meta.total !== undefined) {
-                    document.getElementById('total-count').innerText = res.meta.total;
+                renderPagination(res.meta || res);
+                const metaObj = res.meta || res;
+                if (metaObj && metaObj.total !== undefined) {
+                    document.getElementById('total-count').innerText = metaObj.total;
                 }
             } catch (err) { console.error(err); }
         }
