@@ -174,7 +174,7 @@
                     <!-- Product tags -->
                     <div id="product-tags" class="flex flex-wrap gap-2 mb-4">
                         <div id="product-holidays" class="flex flex-wrap gap-2"></div>
-                        <div id="product-purposes" class="flex flex-wrap gap-2"></div>
+
                     </div>
 
                     <!-- Price -->
@@ -430,14 +430,7 @@
                 });
             }
 
-            // Purposes
-            const purDiv = document.getElementById('product-purposes');
-            purDiv.innerHTML = '';
-            if (p.purposes && p.purposes.length > 0) {
-                p.purposes.forEach(pur => {
-                    purDiv.innerHTML += `<a href="products.html?purpose_id=${pur.id}" class="bg-accent/10 text-accent text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider hover:bg-accent hover:text-white transition cursor-pointer">${pur.name}</a>`;
-                });
-            }
+
 
             // Images
             const mainImg = document.getElementById('main-image');

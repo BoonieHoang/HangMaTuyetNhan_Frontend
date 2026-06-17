@@ -250,13 +250,7 @@
             <div class="space-y-6">
                 <h2 class="text-accent text-[15px] font-bold uppercase tracking-[0.2em] mb-6">BỘ LỌC SẢN PHẨM</h2>
 
-                <!-- Filter Box: Mục đích sử dụng (Dynamic) -->
-                <div>
-                    <div class="filter-header">Mục đích sử dụng</div>
-                    <div id="purpose-list" class="filter-body space-y-3">
-                        <p class="text-[11px] text-gray-500 italic">Đang tải...</p>
-                    </div>
-                </div>
+
 
                 <!-- Filter Box: Sản phẩm theo dịp (Dynamic) -->
                 <div>
@@ -412,7 +406,7 @@
         let currentPage = 1;
         let selectedCategory = null;
         let selectedHoliday = null;   // stores holiday ID
-        let selectedPurpose = null;   // stores purpose ID
+
         let selectedSort = 'popular';
         let categoriesData = [];
         let categoriesVisible = 8;
@@ -439,16 +433,15 @@
                 }
             }
 
-            // Read holiday_id / purpose_id from URL (from product-detail tag click)
+            // Read holiday_id from URL (from product-detail tag click)
             const holidayIdParam = urlParams.get('holiday_id');
             if (holidayIdParam) selectedHoliday = parseInt(holidayIdParam);
 
-            const purposeIdParam = urlParams.get('purpose_id');
-            if (purposeIdParam) selectedPurpose = parseInt(purposeIdParam);
+
 
             await loadCategories();
             await loadHolidays();
-            await loadPurposes();
+
             loadProducts(1);
             setupAuthMenu();
             updateCartCount();
@@ -651,29 +644,7 @@
             });
         }
 
-        async function loadPurposes() {
-            try {
-                const res = await ApiClient.get('/purposes');
-                const list = document.getElementById('purpose-list');
-                list.innerHTML = '';
-                if (!res.length) {
-                    list.innerHTML = '<p class="text-[11px] text-gray-400 italic">Chưa có dữ liệu</p>';
-                    return;
-                }
-                res.forEach(p => {
-                    const label = document.createElement('label');
-                    label.className = 'flex items-center text-[12px] text-gray-500 font-medium cursor-pointer hover:text-primary transition';
-                    label.innerHTML = `
-                        <input type="radio" name="purpose" value="${p.id}"
-                            class="w-5 h-5 mr-3 accent-primary border-gray-300 rounded cursor-pointer"
-                            ${selectedPurpose == p.id ? 'checked' : ''}
-                            onclick="applyPurposeFilter(${p.id})">
-                        ${p.name}
-                    `;
-                    list.appendChild(label);
-                });
-            } catch (e) { }
-        }
+
 
         function applyHolidayFilter(id) {
             if (selectedHoliday === id) {
@@ -689,17 +660,7 @@
             loadProducts(1);
         }
 
-        function applyPurposeFilter(id) {
-            if (selectedPurpose === id) {
-                selectedPurpose = null;
-                setTimeout(() => {
-                    document.querySelectorAll('input[name="purpose"]').forEach(i => i.checked = false);
-                }, 0);
-            } else {
-                selectedPurpose = id;
-            }
-            loadProducts(1);
-        }
+
 
         async function loadProducts(page = 1) {
             currentPage = parseInt(page);
@@ -709,7 +670,7 @@
             if (search) params.append('search', search);
             if (selectedCategory) params.append('category_id', selectedCategory);
             if (selectedHoliday) params.append('holiday_id', selectedHoliday);
-            if (selectedPurpose) params.append('purpose_id', selectedPurpose);
+
             if (selectedSort !== 'default') params.append('sort', selectedSort);
             if (priceMax < 2000000) params.append('price_max', priceMax);
 
