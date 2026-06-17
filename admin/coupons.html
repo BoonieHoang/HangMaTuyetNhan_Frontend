@@ -111,14 +111,17 @@
 
     <main class="flex-1 overflow-y-auto p-8">
         <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center">
-                <h1 class="text-2xl font-bold text-gray-800">Mã Giảm Giá</h1>
-                <span class="ml-3 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-xs font-bold">Tổng số: <span id="total-count">0</span></span>
+            <h1 class="text-2xl font-bold text-gray-800">Mã Giảm Giá</h1>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center bg-[#FDFBF7] border border-accent/20 px-4 py-2 rounded-lg shadow-sm">
+                    <span class="text-accent text-[11px] font-bold uppercase tracking-wider">Tổng số mã giảm giá</span>
+                    <span id="total-count" class="text-primary font-bold text-base ml-3">0</span>
+                </div>
+                <a href="coupon-form.html" id="btn-add"
+                    class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary/90 shadow font-medium transition">
+                    Thêm mã giảm giá
+                </a>
             </div>
-            <a href="coupon-form.html" id="btn-add"
-                class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary/90 shadow font-medium transition">
-                Thêm mã giảm giá
-            </a>
         </div>
 
 
