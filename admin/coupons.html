@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -111,8 +111,9 @@
 
     <main class="flex-1 overflow-y-auto p-8">
         <div class="flex items-center justify-between mb-6">
-            <div>
+            <div class="flex items-center">
                 <h1 class="text-2xl font-bold text-gray-800">Mã Giảm Giá</h1>
+                <span class="ml-3 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold">Tổng số: <span id="total-count">0</span></span>
             </div>
             <a href="coupon-form.html" id="btn-add"
                 class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary/90 shadow font-medium transition">
@@ -186,6 +187,10 @@
 
                 renderTable(res.data);
                 renderPagination(res.meta || res);
+                const metaObj = res.meta || res;
+                if (metaObj && metaObj.total !== undefined) {
+                    document.getElementById('total-count').innerText = metaObj.total;
+                }
             } catch (err) { console.error(err); }
         }
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -88,7 +88,10 @@
 
     <main class="flex-1 overflow-y-auto p-8">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Quản Lý Đơn Hàng</h1>
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-gray-800">Quản Lý Đơn Hàng</h1>
+                <span class="ml-3 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold">Tổng số: <span id="total-count">0</span></span>
+            </div>
         </div>
 
         <div class="bg-white p-4 rounded-t-lg shadow border-b flex flex-wrap gap-4">
@@ -191,6 +194,9 @@
                     </tr>
                 `}).join('');
                 renderPagination(res.meta);
+                if (res.meta && res.meta.total !== undefined) {
+                    document.getElementById('total-count').innerText = res.meta.total;
+                }
             } catch (err) { console.error(err); }
         }
 
