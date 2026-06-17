@@ -70,7 +70,8 @@
                 <div class="relative w-full">
                     <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm"
                         class="w-full border border-gray-200 rounded-lg py-2.5 px-5 pr-12 focus:outline-none focus:border-accent bg-white shadow-sm">
-                    <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary" onclick="performGlobalSearch()">
+                    <button class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary"
+                        onclick="performGlobalSearch()">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607" />
@@ -280,7 +281,7 @@
                         <li><a href="index.html" class="hover:text-primary transition">Trang chủ</a></li>
                         <li><a href="rituals.html" class="hover:text-primary transition">Nghi lễ văn khấn</a></li>
                         <li><a href="about.html" class="hover:text-primary transition">Về chúng tôi</a></li>
-                                                <li><a href="products.html" class="hover:text-primary transition">Sản phẩm</a></li>
+                        <li><a href="products.html" class="hover:text-primary transition">Sản phẩm</a></li>
                     </ul>
                 </div>
                 <div>
@@ -395,11 +396,11 @@
             if (p.stock <= 0) {
                 stockEl.className = 'text-xs text-red-500 mb-4 font-medium bg-red-50 px-2.5 py-1 border border-red-200 rounded w-fit flex items-center gap-1.5';
                 stockEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Hết hàng`;
-                
+
                 addToCartBtn.disabled = true;
                 addToCartBtn.innerHTML = 'HẾT HÀNG';
                 addToCartBtn.className = 'w-full bg-gray-200 text-gray-400 font-bold py-3 px-8 uppercase tracking-wider cursor-not-allowed text-sm flex items-center justify-center gap-2 border border-gray-300';
-                
+
                 buyNowBtn.disabled = true;
                 buyNowBtn.innerHTML = 'TẠM NGƯNG GIAO DỊCH';
                 buyNowBtn.className = 'w-full bg-gray-50 text-gray-300 border border-gray-200 font-bold py-3 px-8 uppercase tracking-wider cursor-not-allowed text-sm';
@@ -407,7 +408,7 @@
                 addToCartBtn.disabled = false;
                 addToCartBtn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg> Thêm vào giỏ`;
                 addToCartBtn.className = 'w-full bg-primary text-white font-bold py-3 px-8 uppercase tracking-wider hover:opacity-90 transition text-sm flex items-center justify-center gap-2';
-                
+
                 buyNowBtn.disabled = false;
                 buyNowBtn.innerHTML = 'Mua ngay';
                 buyNowBtn.className = 'w-full border border-primary text-primary font-bold py-3 px-8 uppercase tracking-wider hover:bg-primary hover:text-white transition text-sm';
