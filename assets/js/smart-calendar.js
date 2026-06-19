@@ -498,8 +498,8 @@
     });
 
     // ── Fetch from backend with LocalStorage Cache ─────────────────────
-    var CACHE_KEY = 'sc_holidays_cache_v2';
-    var CACHE_TIME_KEY = 'sc_holidays_cache_time_v2';
+    var CACHE_KEY = 'sc_holidays_cache_v3';
+    var CACHE_TIME_KEY = 'sc_holidays_cache_time_v3';
     var CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
 
     function fetchHolidays() {
@@ -612,8 +612,19 @@
         now.setHours(0, 0, 0, 0);
 
         var upcoming = holidays
-            .filter(function (h) { return h.nextDate && new Date(h.nextDate) >= now; })
-            .sort(function (a, b) { return new Date(a.nextDate) - new Date(b.nextDate); })
+            .filter(function (h) {
+                if (!h.nextDate) return false;
+                var parts = h.nextDate.split('-');
+                var hDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                return hDate >= now;
+            })
+            .sort(function (a, b) {
+                var ap = a.nextDate.split('-');
+                var bp = b.nextDate.split('-');
+                var ad = new Date(ap[0], ap[1] - 1, ap[2]);
+                var bd = new Date(bp[0], bp[1] - 1, bp[2]);
+                return ad - bd;
+            })
             .slice(0, 3);
 
         if (!upcoming.length) {
@@ -623,7 +634,10 @@
 
         holidaysList.innerHTML = '';
         upcoming.forEach(function (h) {
-            var days = Math.ceil((new Date(h.nextDate) - now) / 86400000);
+            var parts = h.nextDate.split('-');
+            var hDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            var diffTime = hDate.getTime() - now.getTime();
+            var days = Math.round(diffTime / 86400000);
             var badgeClass = days <= 7 ? 'urgent' : (days <= 30 ? 'soon' : 'later');
             var badgeLabel = days === 0 ? 'Hôm nay' : (days === 1 ? 'Ngày mai' : days + ' ngày nữa');
 
